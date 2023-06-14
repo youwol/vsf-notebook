@@ -1,0 +1,16 @@
+.CodeMirror.cm-s-default {
+    height: 100%;
+}
+
+.fv-tree-arianeLine {
+    display: none;
+}
+
+.md-reader pre{
+    background-color: white;
+    padding: 5px
+}
+
+.fv-tree-header{
+    margin-top: 5px
+}
