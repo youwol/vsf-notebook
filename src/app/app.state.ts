@@ -39,6 +39,7 @@ import { HttpModels } from '.'
 import { AssetsGateway } from '@youwol/http-clients'
 import { Selectable, StateTrait } from '@youwol/vsf-canvas'
 import {
+    HtmlTrait,
     Immutable,
     Immutables,
     implementsConfigurableTrait,
@@ -47,7 +48,6 @@ import {
 } from '@youwol/vsf-core'
 import { viewsFactory } from './environments'
 import { ViewsTab } from './side-nav-tabs/bottom/views'
-import { VirtualDOM } from '@youwol/flux-view'
 import { JournalsTab } from './side-nav-tabs/bottom/journals'
 import { DocumentationsTab } from './side-nav-tabs/bottom/documentations'
 import { ConfigTab } from './side-nav-tabs/right/config'
@@ -461,7 +461,7 @@ export class AppState implements StateTrait {
     }
 
     displayModuleView(
-        module: Immutable<Modules.ImplementationTrait & { html: VirtualDOM }>,
+        module: Immutable<Modules.ImplementationTrait & HtmlTrait>,
     ) {
         this.bottomSideNavState.selected$.next('Views')
         const actualViews = this.selectedModulesView$.value
@@ -473,9 +473,7 @@ export class AppState implements StateTrait {
         this.selectedModulesView$.next(actualViews.filter((m) => m != module))
     }
 
-    displayModuleJournal(
-        module: Immutable<Modules.ImplementationTrait & { html: VirtualDOM }>,
-    ) {
+    displayModuleJournal(module: Immutable<Modules.ImplementationTrait>) {
         this.bottomSideNavState.selected$.next('Journals')
         const actualViews = this.selectedModulesJournal$.value
         this.selectedModulesJournal$.next([...actualViews, module])
@@ -487,9 +485,7 @@ export class AppState implements StateTrait {
             actualViews.filter((m) => m != module),
         )
     }
-    displayModuleDocumentation(
-        module: Immutable<Modules.ImplementationTrait & { html: VirtualDOM }>,
-    ) {
+    displayModuleDocumentation(module: Immutable<Modules.ImplementationTrait>) {
         this.bottomSideNavState.selected$.next('Documentations')
         const actualViews = this.selectedModulesDocumentation$.value
         this.selectedModulesDocumentation$.next([...actualViews, module])
