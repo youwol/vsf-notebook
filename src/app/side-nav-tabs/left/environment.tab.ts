@@ -3,6 +3,7 @@ import { VirtualDOM, child$ } from '@youwol/flux-view'
 import { AppState } from '../../app.state'
 import { ImmutableTree } from '@youwol/fv-tree'
 import { Immutable, Projects } from '@youwol/vsf-core'
+import { NodeWorkersBase, WorkersNodeView } from './workers.view'
 
 /**
  * @category View
@@ -41,11 +42,19 @@ export class EnvironmentExplorerView implements VirtualDOM {
     constructor(params: { state: AppState }) {
         Object.assign(this, params)
         this.children = [
-            child$(this.state.envExplorerState$, (state) => {
+            child$(this.state.envExplorerState$.toolboxes, (state) => {
                 return new ImmutableTree.View({
                     state,
                     headerView: (state, node: NodeToolboxesBase) => {
                         return new NodeView({ state, node })
+                    },
+                })
+            }),
+            child$(this.state.envExplorerState$.pools, (state) => {
+                return new ImmutableTree.View({
+                    state,
+                    headerView: (state, node: NodeWorkersBase) => {
+                        return new WorkersNodeView({ state, node })
                     },
                 })
             }),

@@ -51,6 +51,10 @@ import { ViewsTab } from './side-nav-tabs/bottom/views'
 import { JournalsTab } from './side-nav-tabs/bottom/journals'
 import { DocumentationsTab } from './side-nav-tabs/bottom/documentations'
 import { ConfigTab } from './side-nav-tabs/right/config'
+import {
+    createWorkersRootNode,
+    NodeWorkersBase,
+} from './side-nav-tabs/left/workers.view'
 
 type ProjectByCells = Map<NotebookCellTrait, Immutable<Projects.ProjectState>>
 
@@ -147,9 +151,10 @@ export class AppState implements StateTrait {
      *
      * @group States
      */
-    public readonly envExplorerState$: Observable<
-        ImmutableTree.State<NodeToolboxesBase>
-    >
+    public readonly envExplorerState$: {
+        toolboxes: Observable<ImmutableTree.State<NodeToolboxesBase>>
+        pools: Observable<ImmutableTree.State<NodeWorkersBase>>
+    }
 
     /**
      * @group Immutable Properties
@@ -275,22 +280,32 @@ export class AppState implements StateTrait {
             },
             nodeFactory: createProjectRootNode,
         })
-        this.envExplorerState$ = toExplorer$({
-            project$: this.project$,
-            expandedNodes: (rootNode) => [rootNode.id],
-            actionDispatch: (node) => {
-                if (
-                    node instanceof Env.ToolboxNode ||
-                    node instanceof Env.ModuleNode
-                ) {
-                    this.openTab(node)
-                }
-            },
-            nodeFactory: createEnvRootNode,
-        })
+        this.envExplorerState$ = {
+            toolboxes: toExplorer$({
+                project$: this.project$,
+                expandedNodes: (rootNode) => [rootNode.id],
+                actionDispatch: (node) => {
+                    if (
+                        node instanceof Env.ToolboxNode ||
+                        node instanceof Env.ModuleNode
+                    ) {
+                        this.openTab(node)
+                    }
+                },
+                nodeFactory: createEnvRootNode,
+            }),
+            pools: toExplorer$({
+                project$: this.project$,
+                expandedNodes: (rootNode) => [rootNode.id],
+                actionDispatch: () => {
+                    // No op
+                },
+                nodeFactory: createWorkersRootNode,
+            }),
+        }
         combineLatest([
             this.projectExplorerState$,
-            this.envExplorerState$,
+            this.envExplorerState$.toolboxes,
         ]).subscribe((explorers: ImmutableTree.State<ImmutableTree.Node>[]) => {
             this.openTabs$.value
                 .filter((tab) => {

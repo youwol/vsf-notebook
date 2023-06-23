@@ -45,7 +45,10 @@ function viewFactory(nodeId: TabIdentifier, state: AppState) {
     }
     if (nodeId.category == 'Toolbox' || nodeId.category == 'Module') {
         return child$(
-            combineLatest([state.project$, state.envExplorerState$]).pipe(
+            combineLatest([
+                state.project$,
+                state.envExplorerState$.toolboxes,
+            ]).pipe(
                 map(([project, explorer]) => ({
                     node: explorer.getNode(nodeId.id),
                     project,
@@ -185,7 +188,7 @@ export class FilesHeaderView implements VirtualDOM {
                     onclick: () => {
                         combineLatest([
                             this.appState.projectExplorerState$,
-                            this.appState.envExplorerState$,
+                            this.appState.envExplorerState$.toolboxes,
                         ])
                             .pipe(take(1))
                             .subscribe(([project, env]) => {
