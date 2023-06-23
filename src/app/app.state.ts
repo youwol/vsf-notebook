@@ -22,8 +22,12 @@ import {
     factoryCellState,
     NodeToolboxesBase,
     createEnvRootNode,
+    createWorkersRootNode,
+    NodeWorkersBase,
+    ToolboxNode,
+    ModuleNode,
 } from './side-nav-tabs'
-import * as Env from './side-nav-tabs/left/environment.tab'
+
 import { ImmutableTree } from '@youwol/fv-tree'
 import {
     debounceTime,
@@ -51,10 +55,6 @@ import { ViewsTab } from './side-nav-tabs/bottom/views'
 import { JournalsTab } from './side-nav-tabs/bottom/journals'
 import { DocumentationsTab } from './side-nav-tabs/bottom/documentations'
 import { ConfigTab } from './side-nav-tabs/right/config'
-import {
-    createWorkersRootNode,
-    NodeWorkersBase,
-} from './side-nav-tabs/left/workers.view'
 
 type ProjectByCells = Map<NotebookCellTrait, Immutable<Projects.ProjectState>>
 
@@ -286,8 +286,8 @@ export class AppState implements StateTrait {
                 expandedNodes: (rootNode) => [rootNode.id],
                 actionDispatch: (node) => {
                     if (
-                        node instanceof Env.ToolboxNode ||
-                        node instanceof Env.ModuleNode
+                        node instanceof ToolboxNode ||
+                        node instanceof ModuleNode
                     ) {
                         this.openTab(node)
                     }
@@ -395,7 +395,7 @@ export class AppState implements StateTrait {
         })
     }
 
-    openTab(node: NodeProjectBase | Env.NodeToolboxesBase) {
+    openTab(node: NodeProjectBase | NodeToolboxesBase) {
         if (!instanceOfTabCategory(node.category)) {
             return
         }

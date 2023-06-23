@@ -1,6 +1,6 @@
 import { VirtualDOM } from '@youwol/flux-view'
 import { Immutable } from '@youwol/vsf-core'
-import * as Tb from '../side-nav-tabs/left/environment.tab'
+import * as Tb from '../side-nav-tabs/left/environment/toolboxes.view'
 
 /**
  * @category View
