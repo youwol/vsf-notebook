@@ -34,9 +34,10 @@ export class DocumentationsTab extends DockableTabs.Tab {
                     },
                     children: [
                         new HeadersView({
-                            modules$: state.selectedModulesDocumentation$,
+                            entities$: state.selectedModulesDocumentation$,
                             selected$,
                             onClose: (m) => state.closeModuleDocumentation(m),
+                            text: (m) => m.uid,
                         }),
 
                         new ContentView({ state, selected$ }),

@@ -4,6 +4,7 @@ import {
     combineLatest,
     from,
     Observable,
+    of,
     ReplaySubject,
     Subject,
 } from 'rxjs'
@@ -26,6 +27,7 @@ import {
     NodeWorkersBase,
     ToolboxNode,
     ModuleNode,
+    plugWorkersPoolUpdate,
 } from './side-nav-tabs'
 
 import { ImmutableTree } from '@youwol/fv-tree'
@@ -49,12 +51,15 @@ import {
     implementsConfigurableTrait,
     Modules,
     Projects,
+    // eslint-disable-next-line import/namespace -- Parse errors in imported module '@youwol/vsf-core': Identifier expected.
 } from '@youwol/vsf-core'
 import { viewsFactory } from './environments'
 import { ViewsTab } from './side-nav-tabs/bottom/views'
 import { JournalsTab } from './side-nav-tabs/bottom/journals'
 import { DocumentationsTab } from './side-nav-tabs/bottom/documentations'
 import { ConfigTab } from './side-nav-tabs/right/config'
+import { WorkersPoolTypes } from '@youwol/cdn-client'
+import { WorkersTab } from './side-nav-tabs/bottom/workers'
 
 type ProjectByCells = Map<NotebookCellTrait, Immutable<Projects.ProjectState>>
 
@@ -193,6 +198,16 @@ export class AppState implements StateTrait {
         Immutable<Modules.ImplementationTrait[]>
     >([])
 
+    /**
+     *
+     * @group Observables
+     */
+    public readonly selectedWorkers$ = new BehaviorSubject<
+        Immutable<
+            { workersPool: WorkersPoolTypes.WorkersPool; workerId: string }[]
+        >
+    >([])
+
     constructor(params: {
         assetId: string
         originalReplSource: HttpModels.ReplSource
@@ -301,6 +316,7 @@ export class AppState implements StateTrait {
                     // No op
                 },
                 nodeFactory: createWorkersRootNode,
+                onCreated: plugWorkersPoolUpdate,
             }),
         }
         combineLatest([
@@ -330,6 +346,7 @@ export class AppState implements StateTrait {
                 new ViewsTab({ state: this }),
                 new JournalsTab({ state: this }),
                 new DocumentationsTab({ state: this }),
+                new WorkersTab({ state: this }),
             ]),
             selected$: new BehaviorSubject<string>('REPL'),
             persistTabsView: true,
@@ -500,6 +517,7 @@ export class AppState implements StateTrait {
             actualViews.filter((m) => m != module),
         )
     }
+
     displayModuleDocumentation(module: Immutable<Modules.ImplementationTrait>) {
         this.bottomSideNavState.selected$.next('Documentations')
         const actualViews = this.selectedModulesDocumentation$.value
@@ -511,6 +529,19 @@ export class AppState implements StateTrait {
         this.selectedModulesDocumentation$.next(
             actualViews.filter((m) => m != module),
         )
+    }
+
+    displayWorkerEnvironment(
+        workerEnv: Projects.Workers.WorkerEnvironmentTrait,
+    ) {
+        this.bottomSideNavState.selected$.next('Workers')
+        const actualViews = this.selectedWorkers$.value
+        this.selectedWorkers$.next([...actualViews, workerEnv])
+    }
+
+    closeWorkerEnvironment(workerEnv: Projects.Workers.WorkerEnvironmentTrait) {
+        const actualViews = this.selectedWorkers$.value
+        this.selectedWorkers$.next(actualViews.filter((w) => w != workerEnv))
     }
 
     select(entities: Immutables<Selectable>) {
@@ -529,25 +560,38 @@ function toExplorer$<TNode extends ImmutableTree.Node>({
     nodeFactory,
     expandedNodes,
     selectedNode,
+    onCreated,
 }: {
     project$: Observable<Immutable<Projects.ProjectState>>
     actionDispatch: (node) => void
     nodeFactory: (project: Projects.ProjectState) => TNode
     expandedNodes: (rootNode: TNode) => string[]
     selectedNode?: (rootNode: TNode) => TNode
+    onCreated?: ({
+        explorer,
+        project,
+        rootNode,
+    }: {
+        explorer: ImmutableTree.State<TNode>
+        project: Projects.ProjectState
+        rootNode: TNode
+    }) => Observable<unknown>
 }) {
     const explorer$ = project$.pipe(
         filter((p) => p != undefined),
         map((project) => {
             const rootNode = nodeFactory(project)
+            const state = new ImmutableTree.State<TNode>({
+                rootNode,
+                expandedNodes: expandedNodes(rootNode),
+            })
             return {
-                explorer: new ImmutableTree.State<TNode>({
-                    rootNode,
-                    expandedNodes: expandedNodes(rootNode),
-                }),
+                explorer: state,
+                project,
                 rootNode,
             }
         }),
+        switchMap((d) => (onCreated ? onCreated(d).pipe(map(() => d)) : of(d))),
         tap(({ explorer, rootNode }) => {
             selectedNode && explorer.selectedNode$.next(selectedNode(rootNode))
         }),

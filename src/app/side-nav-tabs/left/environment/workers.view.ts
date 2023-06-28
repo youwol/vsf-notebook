@@ -1,9 +1,17 @@
 import { ImmutableTree } from '@youwol/fv-tree'
-import { Immutable, Projects } from '@youwol/vsf-core'
-import { attr$, children$, VirtualDOM } from '@youwol/flux-view'
+// eslint-disable-next-line import/namespace -- Parse errors in imported module '@youwol/vsf-core': Identifier expected.
+import { Immutable, Projects, Immutables } from '@youwol/vsf-core'
+import { attr$, children$, Stream$, VirtualDOM } from '@youwol/flux-view'
 import { WorkersPoolTypes } from '@youwol/cdn-client'
+import { map, mergeMap, tap } from 'rxjs/operators'
+import { merge, Observable, of } from 'rxjs'
 
-export type NodeWorkersCategory = 'Pools' | 'Pool'
+export type NodeWorkersCategory =
+    | 'Pools'
+    | 'Pool'
+    | 'Worker'
+    | 'Package'
+    | 'Version'
 
 /**
  * @category Nodes
@@ -74,6 +82,84 @@ export class PoolNode extends NodeWorkersBase {
         super({
             id: params.id,
             name: params.name,
+            children: [],
+        })
+        Object.assign(this, params)
+    }
+}
+
+/**
+ * @category Nodes
+ */
+export class WorkerNode extends NodeWorkersBase {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly category: NodeWorkersCategory = 'Worker'
+
+    /**
+     * @group Immutable Constants
+     */
+    public readonly instance: Immutable<WorkersPoolTypes.WorkersPool>
+
+    constructor(params: {
+        id: string
+        name: string
+        instance: Immutable<WorkersPoolTypes.WorkersPool>
+    }) {
+        super({
+            id: params.id,
+            name: params.name,
+            children: [],
+        })
+        Object.assign(this, params)
+    }
+}
+
+/**
+ * @category Nodes
+ */
+export class PackageNode extends NodeWorkersBase {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly category: NodeWorkersCategory = 'Package'
+
+    // noinspection JSUnusedGlobalSymbols -- the class needs to be 'auto' clonable `const n1 = new PackageNode(); const n2 = new PackageNode(n)`
+    /**
+     * @group Immutable Constants
+     */
+    public readonly versions: Immutables<string>
+
+    constructor(params: {
+        id: string
+        name: string
+        versions: Immutables<string>
+    }) {
+        super({
+            id: params.id,
+            name: params.name,
+            children: params.versions.map(
+                (v) => new VersionNode({ id: `${params.id}.{v}`, name: v }),
+            ),
+        })
+        Object.assign(this, params)
+    }
+}
+
+/**
+ * @category Nodes
+ */
+export class VersionNode extends NodeWorkersBase {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly category: NodeWorkersCategory = 'Version'
+
+    constructor(params: { id: string; name: string }) {
+        super({
+            id: params.id,
+            name: params.name,
         })
         Object.assign(this, params)
     }
@@ -103,8 +189,11 @@ export class WorkersNodeView implements VirtualDOM {
      * @group Factories
      */
     static NodeTypeFactory: Record<NodeWorkersCategory, string> = {
-        Pools: 'fas fa-cogs',
-        Pool: 'fas fa-cog',
+        Pools: 'fas fa-network-wired',
+        Pool: 'fas fa-server',
+        Worker: 'fas fa-microchip',
+        Package: 'fas fa-box',
+        Version: 'fas fa-tag',
     }
 
     /**
@@ -138,17 +227,14 @@ export class WorkersNodeView implements VirtualDOM {
             { innerText: this.node.name },
             this.node instanceof PoolNode
                 ? new PoolInstancesView(this.node)
+                : this.node instanceof WorkerNode
+                ? new WorkerSuffixView({ node: this.node })
                 : {},
         ]
     }
 }
 
-class PoolInstancesView implements VirtualDOM {
-    /**
-     * @group Immutable DOM Constants
-     */
-    public readonly class = 'd-flex align-items-center'
-
+class StatusView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
@@ -158,37 +244,142 @@ class PoolInstancesView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
+    public readonly class: Stream$<Immutables<string>, string>
+
+    constructor(params: {
+        workerId: string
+        busyWorkers$: Observable<Immutables<string>>
+    }) {
+        this.class = attr$(
+            params.busyWorkers$,
+            (busies): string =>
+                busies.includes(params.workerId) ? 'fa-play' : 'fa-circle ',
+            {
+                wrapper: (d) => `${d} fas p-1 rounded fv-text-success`,
+            },
+        )
+    }
+}
+class PoolInstancesView implements VirtualDOM {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly class = 'd-flex align-items-center'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children
 
     constructor(node: PoolNode) {
         this.children = children$(node.instance.workers$, (workers) => {
             const workerIds = Object.keys(workers)
             return [
-                ...workerIds.map((workerId) => {
-                    return {
-                        class: attr$(
-                            node.instance.busyWorkers$,
-                            (busies): string =>
-                                busies.includes(workerId) ? 'fv-blink' : '',
-                            {
-                                wrapper: (d) =>
-                                    `${d} fas fa-circle p-1 rounded fv-text-success fv-hover-bg-secondary`,
-                            },
-                        ),
-                        onclick: (ev) => {
-                            console.log(workerId)
-                            ev.stopPropagation()
-                        },
-                    }
-                }),
+                ...workerIds.map(
+                    (workerId) =>
+                        new StatusView({
+                            workerId,
+                            busyWorkers$: node.instance.busyWorkers$,
+                        }),
+                ),
                 ...Array.from(
                     Array(node.instance.pool.stretchTo - workerIds.length),
                 ).map(() => {
                     return {
+                        style: {
+                            transform: 'scale(0.7)',
+                        },
                         class: 'fas fa-circle-notch  mx-1',
                     }
                 }),
             ]
         })
     }
+}
+
+class WorkerSuffixView implements VirtualDOM {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly node: WorkerNode
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly class: 'd-flex align-items-center'
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly children: VirtualDOM[]
+
+    constructor(params: { node: WorkerNode }) {
+        Object.assign(this, params)
+        this.children = [
+            new StatusView({
+                workerId: this.node.id,
+                busyWorkers$: this.node.instance.busyWorkers$,
+            }),
+            {
+                innerText: attr$(this.node.instance.runningTasks$, (tasks) => {
+                    const task = tasks.find(
+                        ({ workerId }) => workerId == this.node.id,
+                    )
+                    return task ? task.title : ''
+                }),
+            },
+        ]
+    }
+}
+export function plugWorkersPoolUpdate({
+    explorer,
+    project,
+}: {
+    project: Projects.ProjectState
+    explorer: ImmutableTree.State<NodeWorkersBase>
+}) {
+    return merge(
+        ...project.environment.workersPools.map((wp) =>
+            wp.instance.workers$.pipe(map((workers) => ({ workers, wp }))),
+        ),
+    ).pipe(
+        tap(({ workers, wp }) => {
+            Object.keys(workers).forEach((workerId) => {
+                if (explorer.getNode(workerId) == undefined) {
+                    explorer.addChild(
+                        wp.model.id,
+                        new WorkerNode({
+                            id: workerId,
+                            name: workerId,
+                            instance: wp.instance,
+                        }),
+                    )
+                }
+            })
+        }),
+        mergeMap(({ workers, wp }) => {
+            const empty = Object.keys(workers).reduce(
+                (acc, e) => ({ ...acc, [e]: { importedBundles: {} } }),
+                {},
+            )
+            // next line is fine, it is not deprecated
+            return merge(of(empty), wp.runtimes$)
+        }),
+        tap((dependencies) => {
+            Object.entries(dependencies).forEach(
+                ([workerId, { importedBundles }]) => {
+                    Object.entries(importedBundles).forEach(
+                        ([name, versions]) => {
+                            const node = new PackageNode({
+                                id: `${workerId}.${name}`,
+                                name: name,
+                                versions: versions,
+                            })
+                            explorer.getNode(node.id)
+                                ? explorer.replaceNode(node.id, node)
+                                : explorer.addChild(workerId, node)
+                        },
+                    )
+                },
+            )
+        }),
+    )
 }
