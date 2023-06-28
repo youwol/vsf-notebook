@@ -4,6 +4,7 @@ import {
     combineLatest,
     from,
     Observable,
+    of,
     ReplaySubject,
     Subject,
 } from 'rxjs'
@@ -529,25 +530,38 @@ function toExplorer$<TNode extends ImmutableTree.Node>({
     nodeFactory,
     expandedNodes,
     selectedNode,
+    onCreated,
 }: {
     project$: Observable<Immutable<Projects.ProjectState>>
     actionDispatch: (node) => void
     nodeFactory: (project: Projects.ProjectState) => TNode
     expandedNodes: (rootNode: TNode) => string[]
     selectedNode?: (rootNode: TNode) => TNode
+    onCreated?: ({
+        explorer,
+        project,
+        rootNode,
+    }: {
+        explorer: ImmutableTree.State<TNode>
+        project: Projects.ProjectState
+        rootNode: TNode
+    }) => Observable<unknown>
 }) {
     const explorer$ = project$.pipe(
         filter((p) => p != undefined),
         map((project) => {
             const rootNode = nodeFactory(project)
+            const state = new ImmutableTree.State<TNode>({
+                rootNode,
+                expandedNodes: expandedNodes(rootNode),
+            })
             return {
-                explorer: new ImmutableTree.State<TNode>({
-                    rootNode,
-                    expandedNodes: expandedNodes(rootNode),
-                }),
+                explorer: state,
+                project,
                 rootNode,
             }
         }),
+        switchMap((d) => (onCreated ? onCreated(d).pipe(map(() => d)) : of(d))),
         tap(({ explorer, rootNode }) => {
             selectedNode && explorer.selectedNode$.next(selectedNode(rootNode))
         }),
