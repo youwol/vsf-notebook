@@ -27,6 +27,7 @@ import {
     NodeWorkersBase,
     ToolboxNode,
     ModuleNode,
+    plugWorkersPoolUpdate,
 } from './side-nav-tabs'
 
 import { ImmutableTree } from '@youwol/fv-tree'
@@ -50,6 +51,7 @@ import {
     implementsConfigurableTrait,
     Modules,
     Projects,
+    // eslint-disable-next-line import/namespace -- Parse errors in imported module '@youwol/vsf-core': Identifier expected.
 } from '@youwol/vsf-core'
 import { viewsFactory } from './environments'
 import { ViewsTab } from './side-nav-tabs/bottom/views'
@@ -302,6 +304,7 @@ export class AppState implements StateTrait {
                     // No op
                 },
                 nodeFactory: createWorkersRootNode,
+                onCreated: plugWorkersPoolUpdate,
             }),
         }
         combineLatest([
