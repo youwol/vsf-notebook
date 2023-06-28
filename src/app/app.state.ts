@@ -58,6 +58,8 @@ import { ViewsTab } from './side-nav-tabs/bottom/views'
 import { JournalsTab } from './side-nav-tabs/bottom/journals'
 import { DocumentationsTab } from './side-nav-tabs/bottom/documentations'
 import { ConfigTab } from './side-nav-tabs/right/config'
+import { WorkersPoolTypes } from '@youwol/cdn-client'
+import { WorkersTab } from './side-nav-tabs/bottom/workers'
 
 type ProjectByCells = Map<NotebookCellTrait, Immutable<Projects.ProjectState>>
 
@@ -194,6 +196,16 @@ export class AppState implements StateTrait {
      */
     public readonly selectedModulesDocumentation$ = new BehaviorSubject<
         Immutable<Modules.ImplementationTrait[]>
+    >([])
+
+    /**
+     *
+     * @group Observables
+     */
+    public readonly selectedWorkers$ = new BehaviorSubject<
+        Immutable<
+            { workersPool: WorkersPoolTypes.WorkersPool; workerId: string }[]
+        >
     >([])
 
     constructor(params: {
@@ -334,6 +346,7 @@ export class AppState implements StateTrait {
                 new ViewsTab({ state: this }),
                 new JournalsTab({ state: this }),
                 new DocumentationsTab({ state: this }),
+                new WorkersTab({ state: this }),
             ]),
             selected$: new BehaviorSubject<string>('REPL'),
             persistTabsView: true,
@@ -504,6 +517,7 @@ export class AppState implements StateTrait {
             actualViews.filter((m) => m != module),
         )
     }
+
     displayModuleDocumentation(module: Immutable<Modules.ImplementationTrait>) {
         this.bottomSideNavState.selected$.next('Documentations')
         const actualViews = this.selectedModulesDocumentation$.value
@@ -515,6 +529,19 @@ export class AppState implements StateTrait {
         this.selectedModulesDocumentation$.next(
             actualViews.filter((m) => m != module),
         )
+    }
+
+    displayWorkerEnvironment(
+        workerEnv: Projects.Workers.WorkerEnvironmentTrait,
+    ) {
+        this.bottomSideNavState.selected$.next('Workers')
+        const actualViews = this.selectedWorkers$.value
+        this.selectedWorkers$.next([...actualViews, workerEnv])
+    }
+
+    closeWorkerEnvironment(workerEnv: Projects.Workers.WorkerEnvironmentTrait) {
+        const actualViews = this.selectedWorkers$.value
+        this.selectedWorkers$.next(actualViews.filter((w) => w != workerEnv))
     }
 
     select(entities: Immutables<Selectable>) {
