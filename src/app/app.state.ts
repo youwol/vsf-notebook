@@ -217,9 +217,6 @@ export class AppState implements StateTrait {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- TS2589
         // @ts-ignore
         this.emptyProject = new Projects.ProjectState({
-            main: Projects.emptyWorkflowModel(),
-            macros: [] as never,
-            instancePool: new Projects.InstancePool(),
             environment: new Projects.Environment({
                 viewsFactory,
             }),
