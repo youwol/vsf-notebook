@@ -51,7 +51,6 @@ import {
     implementsConfigurableTrait,
     Modules,
     Projects,
-    // eslint-disable-next-line import/namespace -- Parse errors in imported module '@youwol/vsf-core': Identifier expected.
 } from '@youwol/vsf-core'
 import { viewsFactory } from './environments'
 import { ViewsTab } from './side-nav-tabs/bottom/views'
