@@ -207,6 +207,8 @@ export class AppState implements StateTrait {
         >
     >([])
 
+    private lastExecutedProject: Immutable<Projects.ProjectState>
+
     constructor(params: {
         assetId: string
         originalReplSource: HttpModels.ReplSource
@@ -385,13 +387,10 @@ export class AppState implements StateTrait {
         })
         return batch.execute(this.emptyProject).then((project) => {
             const newHistory = new Map(this.projectByCells$.value)
-            if (remainingCells.length > 0) {
-                const reversed = [...remainingCells].reverse()
-                const last = reversed.find((c) => newHistory.has(c))
-                last &&
-                    newHistory.get(last).instancePool.stop({
-                        keepAlive: project.instancePool,
-                    })
+            if (remainingCells.length > 0 && this.lastExecutedProject) {
+                this.lastExecutedProject.instancePool.stop({
+                    keepAlive: project.instancePool,
+                })
             }
             remainingCells.forEach((cell) => {
                 newHistory.delete(cell)
@@ -401,6 +400,7 @@ export class AppState implements StateTrait {
             }
             this.project$.next(project)
             this.projectByCells$.next(newHistory)
+            this.lastExecutedProject = project
             return {
                 history: this.projectByCells$.value,
                 project,
@@ -528,7 +528,7 @@ export class AppState implements StateTrait {
     }
 
     displayWorkerEnvironment(
-        workerEnv: Projects.Workers.WorkerEnvironmentTrait,
+        workerEnv: Immutable<Projects.Workers.WorkerEnvironmentTrait>,
     ) {
         this.bottomSideNavState.selected$.next('Workers')
         const actualViews = this.selectedWorkers$.value
