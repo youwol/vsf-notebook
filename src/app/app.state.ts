@@ -528,7 +528,7 @@ export class AppState implements StateTrait {
     }
 
     displayWorkerEnvironment(
-        workerEnv: Projects.Workers.WorkerEnvironmentTrait,
+        workerEnv: Immutable<Projects.Workers.WorkerEnvironmentTrait>,
     ) {
         this.bottomSideNavState.selected$.next('Workers')
         const actualViews = this.selectedWorkers$.value
