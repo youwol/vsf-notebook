@@ -23,6 +23,7 @@
         "start": "webpack serve"
     },
     "devDependencies": {
+        "@types/lz-string": "^1.5.0",
         "@types/node": "^18.14.2",
         "typescript": "^4.7.4",
         "ts-lib": "^0.0.5",
