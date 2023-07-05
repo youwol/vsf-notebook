@@ -45,7 +45,11 @@ template = Template(
         runTime=RunTimeDeps(
             externals=load_dependencies,
             includedInBundle={"d3-dag": "0.8.2", "client-zip": "2.3.0"},
-        )
+        ),
+        devTime={
+            # `@types/lz-string` required for documentation step
+            "@types/lz-string": "^1.5.0"
+        },
     ),
     userGuide=True,
     devServer=DevServer(port=3014),
