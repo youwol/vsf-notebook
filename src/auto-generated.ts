@@ -1,8 +1,8 @@
 
 const runTimeDependencies = {
     "externals": {
-        "@youwol/vsf-core": "^0.1.2",
-        "@youwol/vsf-canvas": "^0.1.1",
+        "@youwol/vsf-core": "^0.2.0",
+        "@youwol/vsf-canvas": "^0.2.0",
         "rxjs": "^6.5.5",
         "@youwol/logging": "^0.1.1",
         "@youwol/http-clients": "^2.0.5",
@@ -22,8 +22,8 @@ const runTimeDependencies = {
     }
 }
 const externals = {
-    "@youwol/vsf-core": "window['@youwol/vsf-core_APIv01']",
-    "@youwol/vsf-canvas": "window['@youwol/vsf-canvas_APIv01']",
+    "@youwol/vsf-core": "window['@youwol/vsf-core_APIv02']",
+    "@youwol/vsf-canvas": "window['@youwol/vsf-canvas_APIv02']",
     "rxjs": "window['rxjs_APIv6']",
     "@youwol/logging": "window['@youwol/logging_APIv01']",
     "@youwol/http-clients": "window['@youwol/http-clients_APIv2']",
@@ -40,11 +40,11 @@ const externals = {
 }
 const exportedSymbols = {
     "@youwol/vsf-core": {
-        "apiKey": "01",
+        "apiKey": "02",
         "exportedSymbol": "@youwol/vsf-core"
     },
     "@youwol/vsf-canvas": {
-        "apiKey": "01",
+        "apiKey": "02",
         "exportedSymbol": "@youwol/vsf-canvas"
     },
     "rxjs": {
@@ -126,13 +126,13 @@ const entries = {
 export const setup = {
     name:'@youwol/vsf-notebook',
         assetId:'QHlvdXdvbC92c2Ytbm90ZWJvb2s=',
-    version:'0.0.1-wip',
+    version:'0.1.0-wip',
     shortDescription:"",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/vsf-notebook&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/vsf-notebook',
     sourceGithub:'https://github.com/youwol/vsf-notebook',
     userGuide:'https://l.youwol.com/doc/@youwol/vsf-notebook',
-    apiVersion:'001',
+    apiVersion:'01',
     runTimeDependencies,
     externals,
     exportedSymbols,
@@ -157,7 +157,7 @@ export const setup = {
             modules,
             scripts,
         }).then(() => {
-            return window[`@youwol/vsf-notebook_APIv001`]
+            return window[`@youwol/vsf-notebook_APIv01`]
         })
     },
     installAuxiliaryModule: ({name, cdnClient, installParameters}:{
@@ -172,7 +172,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/vsf-notebook#0.0.1-wip~dist/@youwol/vsf-notebook/${entry.name}.js`
+            `@youwol/vsf-notebook#0.1.0-wip~dist/@youwol/vsf-notebook/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
@@ -183,7 +183,7 @@ export const setup = {
             modules,
             scripts,
         }).then(() => {
-            return window[`@youwol/vsf-notebook/${entry.name}_APIv001`]
+            return window[`@youwol/vsf-notebook/${entry.name}_APIv01`]
         })
     },
     getCdnDependencies(name?: string){

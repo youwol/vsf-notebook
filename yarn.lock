@@ -1303,6 +1303,15 @@
     rxjs "^6.5.5"
     semver "^7.3.4"
 
+"@youwol/cdn-client@^2.0.6":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@youwol/cdn-client/-/cdn-client-2.0.6.tgz#9703e0ac6a4bb7adbc780c259ce70bc4e34f6ba0"
+  integrity sha512-RYhm/1wUiyZ+IQLh7DuN2dxZ6Yu10AZQMuYpgDOU+Lkfj17fWrmXZdluzJGFFYoeMqjCQuTmTYES+Zc03hu4PQ==
+  dependencies:
+    "@youwol/flux-view" "^1.1.0"
+    rxjs "^6.5.5"
+    semver "^7.3.4"
+
 "@youwol/eslint-config@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@youwol/eslint-config/-/eslint-config-0.1.0.tgz#0c851e1f342870012e3f34b12ab7890b0b9ac681"
@@ -1318,7 +1327,7 @@
     eslint-plugin-tsdoc "^0.2.17"
     eslint-plugin-unused-imports "^2.0.0"
 
-"@youwol/flux-view@^1.0.3", "@youwol/flux-view@^1.1.0":
+"@youwol/flux-view@^1.0.3", "@youwol/flux-view@^1.1.0", "@youwol/flux-view@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@youwol/flux-view/-/flux-view-1.1.1.tgz#66c41672b913b99ace5ce6e70d05ad6a9daea579"
   integrity sha512-/EWXYnRRpRI5BMu9IRcwqPJmlf9MZQMS6FaRp3yCzr9RAxhuAbvSZUDN18OJGg3hUvUtRTmQOUWtfQaVypH8Tg==
@@ -1428,27 +1437,27 @@
     ts-node "^10.9.1"
     typescript "^4.9.5"
 
-"@youwol/vsf-canvas@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@youwol/vsf-canvas/-/vsf-canvas-0.1.1.tgz#95ef89e17cdc368c9e8ef4714c6f9e990bfce694"
-  integrity sha512-2ysDOro07hXjxnoNzx4wHdpQMCMM/WDGdyI4Hr20FbS3/oBWmPIVYW21utKyyYgb1TSf3XC0eztD3UbAaSiKLg==
+"@youwol/vsf-canvas@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@youwol/vsf-canvas/-/vsf-canvas-0.2.0.tgz#c07e5749533cca713493b0a59af3e3631da2ebb3"
+  integrity sha512-O+NcDLEfkaOeiP7ANlqVTHNM7nPkl/uf7EG+9IPTDg6GXZrq5IIpHYUZEYcMyeH+1LapvY2g4IpHNK4s2Ah+uA==
   dependencies:
     "@types/three" "^0.152.0"
-    "@youwol/cdn-client" "^2.0.4"
-    "@youwol/flux-view" "^1.0.3"
+    "@youwol/cdn-client" "^2.0.6"
+    "@youwol/flux-view" "^1.1.1"
     "@youwol/fv-tabs" "^0.2.1"
-    "@youwol/vsf-core" "^0.1.2"
+    "@youwol/vsf-core" "^0.2.0"
     d3-dag "0.8.2"
     rxjs "^6.5.5"
     stats.js "^0.17.0"
     three "^0.152.0"
 
-"@youwol/vsf-core@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@youwol/vsf-core/-/vsf-core-0.1.2.tgz#e7999c0838670a48107ff401d95bc8badb589d02"
-  integrity sha512-YxsyhseaL4AB+guBRN7NKzGSEX/O84sX4DU9gOy8ZL3ltsoeQlZLAMx5EIROWB6RRsEJjU5/Thdw+Me0C+Zx6w==
+"@youwol/vsf-core@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@youwol/vsf-core/-/vsf-core-0.2.0.tgz#4694d646b9e178478aa705565525b079b9c16cd5"
+  integrity sha512-Xn8OniEseAwJ9OS+8Cz2GXd2NLLRpQa2NgY0kEESLruremmBHRb/CNPugCLYpRE/edD7vmwdF5dbZhn5OScnEw==
   dependencies:
-    "@youwol/cdn-client" "^2.0.4"
+    "@youwol/cdn-client" "^2.0.6"
     "@youwol/fv-tree" "^0.2.3"
     "@youwol/logging" "^0.1.1"
     rxjs "^6.5.5"
