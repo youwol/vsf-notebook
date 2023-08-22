@@ -9,7 +9,12 @@ import {
 import { AppState } from '../../app.state'
 import { delay, filter, map, mergeMap, scan, take } from 'rxjs/operators'
 import { BehaviorSubject, combineLatest, Observable, ReplaySubject } from 'rxjs'
-import { Projects, Attributes, Immutable, asMutable } from '@youwol/vsf-core'
+import {
+    Projects,
+    Configurations,
+    Immutable,
+    asMutable,
+} from '@youwol/vsf-core'
 
 function cellCodeView(state: AppState, cellState: CellCodeState) {
     const child = (ideView) => ({
@@ -222,7 +227,7 @@ export class CellCodeState implements NotebookCellTrait {
     execute(
         project: Immutable<Projects.ProjectState>,
     ): Promise<Immutable<Projects.ProjectState>> {
-        const attrCode = new Attributes.JsCode<Projects.CellFunction>({
+        const attrCode = new Configurations.JsCode<Projects.CellFunction>({
             value: this.ideState.updates$['./repl'].value.content,
         })
         const executor = new Projects.JsCell({

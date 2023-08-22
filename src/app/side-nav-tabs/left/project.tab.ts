@@ -2,7 +2,7 @@ import { DockableTabs } from '@youwol/fv-tabs'
 import { child$, VirtualDOM } from '@youwol/flux-view'
 import { AppState } from '../../app.state'
 import { ImmutableTree } from '@youwol/fv-tree'
-import { Immutable, Projects } from '@youwol/vsf-core'
+import { Immutable, Projects, Macros as MacroVsf } from '@youwol/vsf-core'
 
 /**
  * @category View
@@ -320,7 +320,7 @@ export function createProjectRootNode(
             new Macros({
                 id: 'macros',
                 name: 'macros',
-                children: project.macros.map((macro: Projects.MacroModel) => {
+                children: project.macros.map((macro: MacroVsf.MacroModel) => {
                     return new Workflow({
                         id: macro.uid,
                         name: macro.uid,
