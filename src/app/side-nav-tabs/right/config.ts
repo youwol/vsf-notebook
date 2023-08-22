@@ -1,12 +1,7 @@
 import { DockableTabs } from '@youwol/fv-tabs'
 import { AppState } from '../../app.state'
 
-import {
-    ConfigurableTrait,
-    Immutable,
-    Immutables,
-    Schema,
-} from '@youwol/vsf-core'
+import { Configurations, Immutable, Immutables } from '@youwol/vsf-core'
 import { child$, VirtualDOM } from '@youwol/flux-view'
 import { ObjectJs } from '@youwol/fv-tree'
 /**
@@ -61,7 +56,9 @@ export class ConfigurationView implements VirtualDOM {
     constructor({
         configurable,
     }: {
-        configurable: Immutable<ConfigurableTrait<Schema>>
+        configurable: Immutable<
+            Configurations.ConfigurableTrait<Configurations.Schema>
+        >
     }) {
         const state = new ObjectJs.State({
             title: '',

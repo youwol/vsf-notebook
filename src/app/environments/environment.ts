@@ -2,11 +2,7 @@ import { installJournalModule, Journal } from '@youwol/logging'
 import { ObjectJs } from '@youwol/fv-tree'
 import { VirtualDOM } from '@youwol/flux-view'
 import * as cdnClient from '@youwol/cdn-client'
-import {
-    Projects,
-    ExecutionJournal,
-    DocumentationTrait,
-} from '@youwol/vsf-core'
+import { ToolBox, ExecutionJournal, DocumentationTrait } from '@youwol/vsf-core'
 
 export const viewsFactory: Journal.DataViewsFactory = [
     {
@@ -42,7 +38,7 @@ export const viewsFactory: Journal.DataViewsFactory = [
         name: 'Documentation',
         description: 'Expose documentation',
         isCompatible: (d: DocumentationTrait) => d.documentation != undefined,
-        view: (data: Projects.ToolBox) => {
+        view: (data: ToolBox) => {
             return {
                 tag: 'iframe',
                 src: data.documentation,

@@ -48,7 +48,8 @@ import {
     HtmlTrait,
     Immutable,
     Immutables,
-    implementsConfigurableTrait,
+    Configurations,
+    Deployers,
     Modules,
     Projects,
 } from '@youwol/vsf-core'
@@ -528,20 +529,23 @@ export class AppState implements StateTrait {
     }
 
     displayWorkerEnvironment(
-        workerEnv: Immutable<Projects.Workers.WorkerEnvironmentTrait>,
+        workerEnv: Immutable<Deployers.WorkerEnvironmentTrait>,
     ) {
         this.bottomSideNavState.selected$.next('Workers')
         const actualViews = this.selectedWorkers$.value
         this.selectedWorkers$.next([...actualViews, workerEnv])
     }
 
-    closeWorkerEnvironment(workerEnv: Projects.Workers.WorkerEnvironmentTrait) {
+    closeWorkerEnvironment(workerEnv: Deployers.WorkerEnvironmentTrait) {
         const actualViews = this.selectedWorkers$.value
         this.selectedWorkers$.next(actualViews.filter((w) => w != workerEnv))
     }
 
     select(entities: Immutables<Selectable>) {
-        if (entities.length == 1 && implementsConfigurableTrait(entities[0])) {
+        if (
+            entities.length == 1 &&
+            Configurations.implementsConfigurableTrait(entities[0])
+        ) {
             this.selectedConfigurable$.next(entities[0])
             this.rightSideNavState.viewState$.next('expanded')
             return

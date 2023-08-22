@@ -1,7 +1,7 @@
 import { DockableTabs } from '@youwol/fv-tabs'
 import { AppState } from '../../app.state'
 
-import { asMutable, Immutable, Projects } from '@youwol/vsf-core'
+import { asMutable, Immutable, Deployers } from '@youwol/vsf-core'
 import { BehaviorSubject, Observable, Subject } from 'rxjs'
 import {
     attr$,
@@ -24,7 +24,7 @@ export class WorkersTab extends DockableTabs.Tab {
             icon: 'fas fa-microchip',
             content: () => {
                 const selected$ =
-                    new BehaviorSubject<Projects.Workers.WorkerEnvironmentTrait>(
+                    new BehaviorSubject<Deployers.WorkerEnvironmentTrait>(
                         undefined,
                     )
 
@@ -67,17 +67,17 @@ export class ContentView implements VirtualDOM {
     /**
      * @group Observables
      */
-    public readonly children: FromStoreChildrenStream$<Projects.Workers.WorkerEnvironmentTrait>
+    public readonly children: FromStoreChildrenStream$<Deployers.WorkerEnvironmentTrait>
 
     constructor({
         state,
         selected$,
     }: {
         state: AppState
-        selected$: Subject<Immutable<Projects.Workers.WorkerEnvironmentTrait>>
+        selected$: Subject<Immutable<Deployers.WorkerEnvironmentTrait>>
     }) {
         const buffer$ = asMutable<
-            Observable<Projects.Workers.WorkerEnvironmentTrait[]>
+            Observable<Deployers.WorkerEnvironmentTrait[]>
         >(state.selectedWorkers$)
         this.children = childrenFromStore$(buffer$, (worker) => {
             return {
