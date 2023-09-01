@@ -402,6 +402,7 @@ export class AppState implements StateTrait {
             this.project$.next(project)
             this.projectByCells$.next(newHistory)
             this.lastExecutedProject = project
+            this.closeOutdatedTabs(project)
             return {
                 history: this.projectByCells$.value,
                 project,
@@ -551,6 +552,23 @@ export class AppState implements StateTrait {
             return
         }
         this.rightSideNavState.viewState$.next('collapsed')
+    }
+
+    private closeOutdatedTabs(project: Projects.ProjectState) {
+        const selections = [
+            this.selectedModulesView$,
+            this.selectedModulesJournal$,
+            this.selectedModulesDocumentation$,
+        ]
+        selections.forEach((selected$) => {
+            const { modules } = project.instancePool.inspector().flat()
+            const displayedModules = selected$.value
+            const toKeep = displayedModules.filter(
+                (m: Immutable<Modules.ImplementationTrait>) =>
+                    modules.includes(m),
+            )
+            selected$.next(toKeep)
+        })
     }
 }
 
