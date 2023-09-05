@@ -570,6 +570,22 @@ export class AppState implements StateTrait {
             selected$.next(toKeep)
         })
     }
+
+    public invalidateCell(cell: Immutable<NotebookCellTrait>) {
+        const cells = this.cells$.value
+        const index = cells.indexOf(cell)
+        const remainingCells = cells.slice(index + 1)
+        const newHistory = new Map(this.projectByCells$.value)
+        if (remainingCells.length > 0 && this.lastExecutedProject) {
+            this.lastExecutedProject.instancePool.stop({
+                keepAlive: this.project$.value.instancePool,
+            })
+        }
+        remainingCells.forEach((cell) => {
+            newHistory.delete(cell)
+        })
+        this.projectByCells$.next(newHistory)
+    }
 }
 
 function toExplorer$<TNode extends ImmutableTree.Node>({

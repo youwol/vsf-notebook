@@ -7,7 +7,7 @@ import {
     VirtualDOM,
 } from '@youwol/flux-view'
 import { AppState } from '../../app.state'
-import { delay, filter, map, mergeMap, scan, take } from 'rxjs/operators'
+import { delay, filter, map, mergeMap, scan, skip, take } from 'rxjs/operators'
 import { BehaviorSubject, combineLatest, Observable, ReplaySubject } from 'rxjs'
 import {
     Projects,
@@ -209,6 +209,9 @@ export class CellCodeState implements NotebookCellTrait {
                 },
             ],
             defaultFileSystem: Promise.resolve(new Map<string, string>()),
+        })
+        this.ideState.updates$['./repl'].pipe(skip(1)).subscribe(() => {
+            this.appState.invalidateCell(this)
         })
         this.isLastCell$ = combineLatest([
             this.appState.cells$,
