@@ -126,7 +126,7 @@ const entries = {
 export const setup = {
     name:'@youwol/vsf-notebook',
         assetId:'QHlvdXdvbC92c2Ytbm90ZWJvb2s=',
-    version:'0.1.0-wip',
+    version:'0.1.0',
     shortDescription:"",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/vsf-notebook&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/vsf-notebook',
@@ -172,7 +172,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/vsf-notebook#0.1.0-wip~dist/@youwol/vsf-notebook/${entry.name}.js`
+            `@youwol/vsf-notebook#0.1.0~dist/@youwol/vsf-notebook/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
