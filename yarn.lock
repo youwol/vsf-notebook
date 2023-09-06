@@ -1294,15 +1294,6 @@
   dependencies:
     semver "^7.3.4"
 
-"@youwol/cdn-client@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@youwol/cdn-client/-/cdn-client-2.0.4.tgz#e09318845ff38d7a83114104fadd0e3b2f83f23d"
-  integrity sha512-GlJ+TZzjvL7JNwuT2jTos2YLrP4jRFqgScV9ctOOWagSqZvbwnxAcMC6YSVprd3bZdQ2nLGZ1u9R5P9OTeFZvg==
-  dependencies:
-    "@youwol/flux-view" "^1.1.0"
-    rxjs "^6.5.5"
-    semver "^7.3.4"
-
 "@youwol/cdn-client@^2.0.6":
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/@youwol/cdn-client/-/cdn-client-2.0.6.tgz#9703e0ac6a4bb7adbc780c259ce70bc4e34f6ba0"
@@ -1437,25 +1428,25 @@
     ts-node "^10.9.1"
     typescript "^4.9.5"
 
-"@youwol/vsf-canvas@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@youwol/vsf-canvas/-/vsf-canvas-0.2.0.tgz#c07e5749533cca713493b0a59af3e3631da2ebb3"
-  integrity sha512-O+NcDLEfkaOeiP7ANlqVTHNM7nPkl/uf7EG+9IPTDg6GXZrq5IIpHYUZEYcMyeH+1LapvY2g4IpHNK4s2Ah+uA==
+"@youwol/vsf-canvas@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@youwol/vsf-canvas/-/vsf-canvas-0.2.1.tgz#b7f3eef0c75555f9b80cd74a65f7ff691cf1e459"
+  integrity sha512-YOAftJZccuZGM6vpkaUzYi9c+IGRNxvaHp0NHoQBVTybXduf2Y7VlUxkoEckFHiRZHEGe0L2FH+J6BwA+AXuxA==
   dependencies:
     "@types/three" "^0.152.0"
     "@youwol/cdn-client" "^2.0.6"
     "@youwol/flux-view" "^1.1.1"
     "@youwol/fv-tabs" "^0.2.1"
-    "@youwol/vsf-core" "^0.2.0"
+    "@youwol/vsf-core" "^0.2.1"
     d3-dag "0.8.2"
     rxjs "^6.5.5"
     stats.js "^0.17.0"
     three "^0.152.0"
 
-"@youwol/vsf-core@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@youwol/vsf-core/-/vsf-core-0.2.0.tgz#4694d646b9e178478aa705565525b079b9c16cd5"
-  integrity sha512-Xn8OniEseAwJ9OS+8Cz2GXd2NLLRpQa2NgY0kEESLruremmBHRb/CNPugCLYpRE/edD7vmwdF5dbZhn5OScnEw==
+"@youwol/vsf-core@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@youwol/vsf-core/-/vsf-core-0.2.1.tgz#b5dabe2daf4a2928b8423af7b776a6d6fd08527a"
+  integrity sha512-+PHWDS1ktSC9IMcIvcYg2DRRp9a4u8gLk3yZP+4GQqYEBmLrMFObQIKQ+Aq2XnB0sOaY9BtP9BR7YTMj3yEWjQ==
   dependencies:
     "@youwol/cdn-client" "^2.0.6"
     "@youwol/fv-tree" "^0.2.3"
