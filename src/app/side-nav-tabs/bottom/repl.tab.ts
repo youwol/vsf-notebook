@@ -89,12 +89,14 @@ export function cellMarkdownView(
             children: [editMdView, readMdView],
         }
     }
+    const onExe = () => {
+        const mode = editionMode$.value == 'view' ? 'edit' : 'view'
+        editionMode$.next(mode)
+    }
     return new CellWrapperView({
         cellState,
-        onExe: () => {
-            editionMode$.next('view')
-        },
-        withActions: [],
+        onExe,
+        withActions: [new MarkdownActionView({ onExe, editionMode$ })],
         language: 'markdown',
         child,
     })
@@ -553,6 +555,32 @@ export class RunCodeActionView {
             params.onExe().then(() => {
                 isRunning$.next(false)
             })
+        }
+    }
+}
+
+export class MarkdownActionView {
+    public readonly class = 'fv-hover-bg-secondary'
+    public readonly children: VirtualDOM[]
+    public readonly onclick
+    constructor(params: {
+        onExe
+        editionMode$: BehaviorSubject<'view' | 'edit'>
+    }) {
+        this.children = [
+            {
+                class: attr$(
+                    params.editionMode$,
+                    (mode): string => (mode == 'view' ? 'fa-pen' : 'fa-eye'),
+                    {
+                        wrapper: (d) =>
+                            `${d} fv-text-success fas fv-pointer p-1`,
+                    },
+                ),
+            },
+        ]
+        this.onclick = () => {
+            params.onExe()
         }
     }
 }
