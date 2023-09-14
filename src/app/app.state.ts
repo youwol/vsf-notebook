@@ -374,10 +374,11 @@ export class AppState implements StateTrait {
         }
     }
 
-    execute(cell: NotebookCellTrait): Promise<{
+    execute(cell?: Immutable<NotebookCellTrait>): Promise<{
         history: Immutable<ProjectByCells>
         project: Projects.ProjectState
     }> {
+        cell = cell || this.cells$.value.slice(-1)[0]
         const index = this.cells$.value.indexOf(cell)
         const executingCells = this.cells$.value.slice(0, index + 1)
         const remainingCells = this.cells$.value.slice(index + 1)
