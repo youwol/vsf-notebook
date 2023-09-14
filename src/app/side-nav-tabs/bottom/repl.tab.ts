@@ -44,8 +44,11 @@ function cellCodeView(state: AppState, cellState: CellCodeState) {
     return new CellWrapperView({
         cellState,
         onExe: () => {
-            state.execute(cellState) //.subscribe()
+            state.execute(cellState).then()
         },
+        withActions: [
+            new RunCodeActionView({ onExe: () => state.execute(cellState) }),
+        ],
         language: 'javascript',
         child,
     })
@@ -91,6 +94,7 @@ export function cellMarkdownView(
         onExe: () => {
             editionMode$.next('view')
         },
+        withActions: [],
         language: 'markdown',
         child,
     })
@@ -329,6 +333,7 @@ export class CellWrapperView {
 
     constructor(params: {
         cellState: NotebookCellTrait
+        withActions: VirtualDOM[]
         onExe
         language
         child
@@ -351,6 +356,7 @@ export class CellWrapperView {
             child$(this.hovered$, (hovered) => {
                 return hovered
                     ? new ReplTopMenuView({
+                          withActions: params.withActions,
                           cellState: this.cellState,
                           appState: this.appState,
                       })
@@ -421,7 +427,11 @@ export class ReplTopMenuView {
      */
     public readonly children: VirtualDOM[]
 
-    constructor(params: { cellState: NotebookCellTrait; appState: AppState }) {
+    constructor(params: {
+        cellState: NotebookCellTrait
+        appState: AppState
+        withActions: VirtualDOM[]
+    }) {
         Object.assign(this, params)
         const classIcon =
             'd-flex align-items-center rounded p-1 fv-hover-bg-background-alt fv-pointer'
@@ -449,6 +459,10 @@ export class ReplTopMenuView {
                     )
                 },
             },
+            {
+                class: 'mx-2',
+            },
+            ...params.withActions,
             { class: 'flex-grow-1' },
             {
                 class: classIcon,
