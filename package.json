@@ -1,7 +1,7 @@
 {
     "name": "@youwol/vsf-notebook",
     "description": "",
-    "version": "0.1.0",
+    "version": "0.1.1-wip",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/vsf-notebook#README.md",
     "main": "dist/index.html",
