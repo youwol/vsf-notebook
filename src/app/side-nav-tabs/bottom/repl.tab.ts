@@ -116,6 +116,14 @@ export class ReplTab extends DockableTabs.Tab {
                     },
                     children: [
                         {
+                            class: 'w-100 d-flex justify-content-center py-1 border-bottom',
+                            children: [
+                                new RunCodeActionView({
+                                    onExe: () => state.execute(),
+                                }),
+                            ],
+                        },
+                        {
                             class: 'h-100 w-75 mx-auto',
                             children: childrenFromStore$(
                                 asMutable<Observable<NotebookCellTrait[]>>(
