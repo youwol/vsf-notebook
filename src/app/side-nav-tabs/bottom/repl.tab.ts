@@ -328,7 +328,7 @@ export class CellWrapperView {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'w-100 mb-3'
+    public readonly class = 'w-100 mb-3 p-1 fv-hover-border-primary'
 
     /**
      * @group Immutable DOM Constants
