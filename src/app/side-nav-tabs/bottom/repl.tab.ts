@@ -527,3 +527,32 @@ export class ReplTopMenuView {
         ]
     }
 }
+
+export class RunCodeActionView {
+    public readonly class = 'fv-hover-bg-secondary'
+    public readonly children: VirtualDOM[]
+    public readonly onclick
+    constructor(params: { onExe }) {
+        const isRunning$ = new BehaviorSubject(false)
+        this.children = [
+            {
+                class: attr$(
+                    isRunning$,
+                    (isRunning): string =>
+                        isRunning
+                            ? 'fa-spinner fa-spin'
+                            : 'fa-play fv-pointer fv-text-success',
+                    {
+                        wrapper: (d) => `${d} fas rounded p-1`,
+                    },
+                ),
+            },
+        ]
+        this.onclick = () => {
+            isRunning$.next(true)
+            params.onExe().then(() => {
+                isRunning$.next(false)
+            })
+        }
+    }
+}
