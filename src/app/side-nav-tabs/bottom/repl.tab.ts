@@ -110,7 +110,7 @@ export class ReplTab extends DockableTabs.Tab {
             icon: 'fas fa-code',
             content: () => {
                 return {
-                    class: 'w-100 p-2 overflow-auto mx-auto',
+                    class: 'w-100 mx-auto d-flex flex-column',
                     style: {
                         height: '50vh',
                     },
@@ -124,25 +124,41 @@ export class ReplTab extends DockableTabs.Tab {
                             ],
                         },
                         {
-                            class: 'h-100 w-75 mx-auto',
-                            children: childrenFromStore$(
-                                asMutable<Observable<NotebookCellTrait[]>>(
-                                    state.cells$,
-                                ),
-                                (cellState) => {
-                                    return cellState.mode == 'code'
-                                        ? cellCodeView(
-                                              state,
-                                              cellState as CellCodeState,
-                                          )
-                                        : cellMarkdownView(state, cellState)
-                                },
+                            class: 'flex-grow-1 w-100 overflow-auto',
+                            connectedCallback: (d: HTMLElement) => {
+                                d.scroll({ top: 0 })
+                            },
+                            children: [
                                 {
-                                    orderOperator: (a, b) =>
-                                        state.cells$.value.indexOf(a) -
-                                        state.cells$.value.indexOf(b),
+                                    style: {
+                                        minHeight: '0px',
+                                        maxWidth: '800px',
+                                        textAlign: 'justify',
+                                    },
+                                    class: 'h-100 w-75  mx-auto',
+                                    children: childrenFromStore$(
+                                        asMutable<
+                                            Observable<NotebookCellTrait[]>
+                                        >(state.cells$),
+                                        (cellState) => {
+                                            return cellState.mode == 'code'
+                                                ? cellCodeView(
+                                                      state,
+                                                      cellState as CellCodeState,
+                                                  )
+                                                : cellMarkdownView(
+                                                      state,
+                                                      cellState,
+                                                  )
+                                        },
+                                        {
+                                            orderOperator: (a, b) =>
+                                                state.cells$.value.indexOf(a) -
+                                                state.cells$.value.indexOf(b),
+                                        },
+                                    ),
                                 },
-                            ),
+                            ],
                         },
                     ],
                 }
@@ -429,7 +445,8 @@ export class ReplTopMenuView {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'w-100 d-flex align-items-center'
+    public readonly class =
+        'w-100 d-flex align-items-center fv-bg-background-alt px-2'
     /**
      * @group Immutable DOM Constants
      */
