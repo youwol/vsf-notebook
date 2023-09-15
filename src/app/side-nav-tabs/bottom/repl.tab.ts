@@ -8,7 +8,13 @@ import {
 } from '@youwol/flux-view'
 import { AppState } from '../../app.state'
 import { delay, filter, map, mergeMap, scan, skip, take } from 'rxjs/operators'
-import { BehaviorSubject, combineLatest, Observable, ReplaySubject } from 'rxjs'
+import {
+    BehaviorSubject,
+    combineLatest,
+    Observable,
+    ReplaySubject,
+    Subject,
+} from 'rxjs'
 import {
     Projects,
     Configurations,
@@ -126,11 +132,41 @@ export class CellsSeparatorView {
         ]
     }
 }
+
+export class ScrollerActionsView {
+    public readonly class = 'd-flex'
+    public readonly children: VirtualDOM[]
+    constructor(params: { element: HTMLElement }) {
+        this.children = [
+            {
+                class: 'fas fa-angle-double-up fv-pointer fv-hover-text-focus',
+                onclick: () => {
+                    params.element.scroll({
+                        top: 0,
+                        behavior: 'smooth',
+                    })
+                },
+            },
+            { class: 'mx-1' },
+            {
+                class: 'fas fa-angle-double-down fv-pointer fv-hover-text-focus',
+                onclick: () => {
+                    params.element.scroll({
+                        top: params.element.scrollHeight,
+                        behavior: 'smooth',
+                    })
+                },
+            },
+            { class: 'mx-1' },
+        ]
+    }
+}
 /**
  * @category View
  */
 export class ReplTab extends DockableTabs.Tab {
     constructor({ state }: { state: AppState }) {
+        const scrollableElement$ = new Subject<HTMLElement>()
         super({
             id: 'REPL',
             title: 'REPL',
@@ -143,17 +179,29 @@ export class ReplTab extends DockableTabs.Tab {
                     },
                     children: [
                         {
-                            class: 'w-100 d-flex justify-content-center py-1 border-bottom',
+                            class: 'w-100 d-flex justify-content-center py-1 border-bottom align-items-center',
                             children: [
+                                {
+                                    class: 'flex-grow-1',
+                                },
                                 new RunCodeActionView({
                                     onExe: () => state.execute(),
                                 }),
+                                {
+                                    class: 'flex-grow-1',
+                                },
+                                child$(
+                                    scrollableElement$,
+                                    (element) =>
+                                        new ScrollerActionsView({ element }),
+                                ),
                             ],
                         },
                         {
                             class: 'flex-grow-1 w-100 overflow-auto',
                             connectedCallback: (d: HTMLElement) => {
                                 d.scroll({ top: 0 })
+                                scrollableElement$.next(d)
                             },
                             children: [
                                 {
