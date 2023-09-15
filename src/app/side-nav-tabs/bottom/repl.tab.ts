@@ -101,6 +101,31 @@ export function cellMarkdownView(
         child,
     })
 }
+
+export class CellsSeparatorView {
+    public readonly class = 'd-flex w-100 align-items-center'
+    public readonly children: VirtualDOM[]
+    constructor(params: {
+        state: AppState
+        refCell: Immutable<NotebookCellTrait>
+        position: 'before' | 'after'
+    }) {
+        this.children = [
+            {
+                class: 'fv-text-primary fas fa-plus-square fv-pointer fv-hover-text-focus',
+                onclick: () => {
+                    params.state.newCell(params.refCell, params.position)
+                },
+            },
+            {
+                class: 'flex-grow-1 border mx-2',
+                style: {
+                    height: '0px',
+                },
+            },
+        ]
+    }
+}
 /**
  * @category View
  */
@@ -143,15 +168,45 @@ export class ReplTab extends DockableTabs.Tab {
                                             Observable<NotebookCellTrait[]>
                                         >(state.cells$),
                                         (cellState) => {
-                                            return cellState.mode == 'code'
-                                                ? cellCodeView(
-                                                      state,
-                                                      cellState as CellCodeState,
-                                                  )
-                                                : cellMarkdownView(
-                                                      state,
-                                                      cellState,
-                                                  )
+                                            const preCellView =
+                                                new CellsSeparatorView({
+                                                    state,
+                                                    refCell: cellState,
+                                                    position: 'before',
+                                                })
+                                            const maybePostCellView =
+                                                new CellsSeparatorView({
+                                                    state,
+                                                    refCell: cellState,
+                                                    position: 'after',
+                                                })
+                                            const postCellView = child$(
+                                                state.cells$,
+                                                (cells) => {
+                                                    const lastCell =
+                                                        cells.slice(-1)[0]
+                                                    return lastCell == cellState
+                                                        ? maybePostCellView
+                                                        : {}
+                                                },
+                                            )
+                                            const content =
+                                                cellState.mode == 'code'
+                                                    ? cellCodeView(
+                                                          state,
+                                                          cellState as CellCodeState,
+                                                      )
+                                                    : cellMarkdownView(
+                                                          state,
+                                                          cellState,
+                                                      )
+                                            return {
+                                                children: [
+                                                    preCellView,
+                                                    content,
+                                                    postCellView,
+                                                ],
+                                            }
                                         },
                                         {
                                             orderOperator: (a, b) =>
@@ -491,31 +546,6 @@ export class ReplTopMenuView {
             },
             ...params.withActions,
             { class: 'flex-grow-1' },
-            {
-                class: classIcon,
-                children: [
-                    {
-                        class: 'fas fa-plus',
-                    },
-                    {
-                        class: 'fas fa-chevron-down',
-                    },
-                ],
-                onclick: () => this.appState.newCell(this.cellState, 'after'),
-            },
-            { class: 'mx-2' },
-            {
-                class: classIcon,
-                children: [
-                    {
-                        class: 'fas fa-plus',
-                    },
-                    {
-                        class: 'fas fa-chevron-up',
-                    },
-                ],
-                onclick: () => this.appState.newCell(this.cellState, 'before'),
-            },
             { class: 'mx-2' },
             {
                 class: classIcon,
