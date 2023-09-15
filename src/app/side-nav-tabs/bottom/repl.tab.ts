@@ -383,7 +383,7 @@ export class CellWrapperView {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'w-100 mb-3 p-1 fv-hover-border-primary'
+    public readonly class = 'w-100 p-1 fv-hover-border-focus'
 
     /**
      * @group Immutable DOM Constants
@@ -516,7 +516,7 @@ export class ReplTopMenuView {
     }) {
         Object.assign(this, params)
         const classIcon =
-            'd-flex align-items-center rounded p-1 fv-hover-bg-background-alt fv-pointer'
+            'd-flex align-items-center rounded p-1 fv-hover-text-focus fv-pointer'
         this.children = [
             {
                 tag: 'select',
@@ -551,7 +551,7 @@ export class ReplTopMenuView {
                 class: classIcon,
                 children: [
                     {
-                        class: 'fas fa-trash',
+                        class: 'fas fa-trash fv-text-error fv-hover-text-focus',
                     },
                 ],
                 onclick: () => this.appState.deleteCell(this.cellState),
@@ -590,7 +590,7 @@ export class RunCodeActionView {
 }
 
 export class MarkdownActionView {
-    public readonly class = 'fv-hover-bg-secondary'
+    public readonly class = 'fv-hover-text-focus'
     public readonly children: VirtualDOM[]
     public readonly onclick
     constructor(params: {
