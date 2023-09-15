@@ -437,7 +437,7 @@ export class AppState implements StateTrait {
         }
     }
 
-    newCell(cellRef: NotebookCellTrait, where: 'after' | 'before') {
+    newCell(cellRef: Immutable<NotebookCellTrait>, where: 'after' | 'before') {
         const { newCells, newStore } = Projects.insertCell({
             cells: this.cells$.value,
             cellRef,
