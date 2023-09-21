@@ -21,6 +21,7 @@ import {
     Configurations,
     Immutable,
     asMutable,
+    Immutables,
 } from '@youwol/vsf-core'
 
 function cellCodeView(
@@ -222,7 +223,7 @@ export class ReplTab extends DockableTabs.Tab {
                                         maxWidth: '800px',
                                         textAlign: 'justify',
                                     },
-                                    class: 'h-100 w-75  mx-auto',
+                                    class: 'h-100 w-75 d-flex flex-column mx-auto',
                                     children: childrenFromStore$(
                                         asMutable<
                                             Observable<NotebookCellTrait[]>
@@ -551,6 +552,51 @@ export class ReplOutput {
         ]
     }
 }
+
+/**
+ * @category View
+ */
+export class MoveIconView implements VirtualDOM {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly class: Stream$<Immutables<NotebookCellTrait>, string>
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly onclick: () => void
+
+    constructor(params: {
+        direction: 'up' | 'down'
+        appState: Immutable<AppState>
+        cell: Immutable<NotebookCellTrait>
+    }) {
+        const isOk = (cells) => {
+            const index = cells.indexOf(params.cell)
+            return params.direction == 'up'
+                ? index > 0
+                : index < cells.length - 1
+        }
+        const faClass =
+            params.direction == 'down'
+                ? 'fa-arrow-alt-circle-down'
+                : 'fa-arrow-alt-circle-up'
+        this.class = attr$(
+            params.appState.cells$,
+            (cells): string => (isOk(cells) ? '' : 'd-none'),
+            {
+                wrapper: (d) =>
+                    `${d} fas ${faClass} fv-hover-text-focus fv-pointer`,
+            },
+        )
+        this.onclick = () =>
+            params.appState.moveCell(
+                params.cell,
+                params.direction == 'up' ? -1 : 1,
+            )
+    }
+}
+
 /**
  * @category View
  */
@@ -612,7 +658,23 @@ export class ReplTopMenuView {
             },
             ...params.withActions,
             { class: 'flex-grow-1' },
-            { class: 'mx-2' },
+            {
+                class: 'd-flex align-items-center',
+                children: [
+                    new MoveIconView({
+                        appState: this.appState,
+                        cell: this.cellState,
+                        direction: 'up',
+                    }),
+                    { class: 'mx-1' },
+                    new MoveIconView({
+                        appState: this.appState,
+                        cell: this.cellState,
+                        direction: 'down',
+                    }),
+                ],
+            },
+            { class: 'mx-5' },
             {
                 class: classIcon,
                 children: [

@@ -555,6 +555,28 @@ export class AppState implements StateTrait {
         this.rightSideNavState.viewState$.next('collapsed')
     }
 
+    moveCell(cell: Immutable<NotebookCellTrait>, deltaIndex: number) {
+        const cells = [...this.cells$.value]
+        const oldIndex = cells.indexOf(cell)
+        if (
+            oldIndex + deltaIndex >= cells.length ||
+            oldIndex + deltaIndex < 0
+        ) {
+            console.error('Can not move cell at a requested position', {
+                oldIndex,
+                deltaIndex,
+                cells,
+            })
+            return
+        }
+        cells.splice(oldIndex, 1)
+        cells.splice(oldIndex + deltaIndex, 0, cell)
+        this.cells$.next(cells)
+        const newIndex = cells.indexOf(cell)
+        // -1 because the cell itself is actually also invalidated
+        this.invalidateCell(cells[newIndex - 1])
+    }
+
     private closeOutdatedTabs(project: Projects.ProjectState) {
         const selections = [
             this.selectedModulesView$,
