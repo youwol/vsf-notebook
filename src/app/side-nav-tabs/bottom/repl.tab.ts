@@ -4,6 +4,7 @@ import {
     attr$,
     child$,
     childrenFromStore$,
+    Stream$,
     VirtualDOM,
 } from '@youwol/flux-view'
 import { AppState } from '../../app.state'
@@ -22,7 +23,11 @@ import {
     asMutable,
 } from '@youwol/vsf-core'
 
-function cellCodeView(state: AppState, cellState: CellCodeState) {
+function cellCodeView(
+    state: AppState,
+    cellState: CellCodeState,
+    selectedCell$: Subject<Immutable<NotebookCellTrait>>,
+) {
     const child = (ideView) => ({
         style: attr$(state.projectByCells$, (hist) => {
             return hist.has(cellState)
@@ -57,12 +62,14 @@ function cellCodeView(state: AppState, cellState: CellCodeState) {
         ],
         language: 'javascript',
         child,
+        selectedCell$,
     })
 }
 
 export function cellMarkdownView(
     state: AppState,
     cellState: NotebookCellTrait,
+    selectedCell$: Subject<Immutable<NotebookCellTrait>>,
 ) {
     const editionMode$ = new BehaviorSubject<'view' | 'edit'>('view')
     const child = (ideView: Common.CodeEditorView) => {
@@ -101,6 +108,7 @@ export function cellMarkdownView(
     }
     return new CellWrapperView({
         cellState,
+        selectedCell$,
         onExe,
         withActions: [new MarkdownActionView({ onExe, editionMode$ })],
         language: 'markdown',
@@ -165,6 +173,9 @@ export class ScrollerActionsView {
  * @category View
  */
 export class ReplTab extends DockableTabs.Tab {
+    public readonly selectedCell$ = new BehaviorSubject<
+        Immutable<NotebookCellTrait>
+    >(undefined)
     constructor({ state }: { state: AppState }) {
         const scrollableElement$ = new Subject<HTMLElement>()
         super({
@@ -177,6 +188,7 @@ export class ReplTab extends DockableTabs.Tab {
                     style: {
                         height: '50vh',
                     },
+                    onclick: () => this.selectedCell$.next(undefined),
                     children: [
                         {
                             class: 'w-100 d-flex justify-content-center py-1 border-bottom align-items-center',
@@ -243,10 +255,12 @@ export class ReplTab extends DockableTabs.Tab {
                                                     ? cellCodeView(
                                                           state,
                                                           cellState as CellCodeState,
+                                                          this.selectedCell$,
                                                       )
                                                     : cellMarkdownView(
                                                           state,
                                                           cellState,
+                                                          this.selectedCell$,
                                                       )
                                             return {
                                                 children: [
@@ -431,19 +445,14 @@ export class CellWrapperView {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'w-100 p-1 fv-hover-border-focus'
+    public readonly class: Stream$<Immutable<NotebookCellTrait>, string>
 
     /**
      * @group Immutable DOM Constants
      */
     public readonly children: VirtualDOM[]
 
-    /**
-     * @group Observables
-     */
-    public readonly hovered$: BehaviorSubject<boolean> = new BehaviorSubject(
-        false,
-    )
+    public readonly selectedCell$: Subject<Immutable<NotebookCellTrait>>
 
     /**
      * @group Immutable DOM Constants
@@ -463,11 +472,18 @@ export class CellWrapperView {
     constructor(params: {
         cellState: NotebookCellTrait
         withActions: VirtualDOM[]
+        selectedCell$: Subject<Immutable<NotebookCellTrait>>
         onExe
         language
         child
     }) {
         Object.assign(this, params)
+        this.class = attr$(
+            this.selectedCell$,
+            (selected): string =>
+                selected === this.cellState ? 'fv-border-focus' : '',
+            { wrapper: (d) => `w-100 p-1 ${d}` },
+        )
         this.appState = this.cellState.appState
         const ideView = new Common.CodeEditorView({
             ideState: this.cellState.ideState,
@@ -482,8 +498,8 @@ export class CellWrapperView {
             },
         })
         this.children = [
-            child$(this.hovered$, (hovered) => {
-                return hovered
+            child$(this.selectedCell$, (cellState) => {
+                return cellState == this.cellState
                     ? new ReplTopMenuView({
                           withActions: params.withActions,
                           cellState: this.cellState,
@@ -493,9 +509,11 @@ export class CellWrapperView {
             }),
             params.child(ideView),
         ]
-        this.onclick = () => this.appState.selectCell(this.cellState)
-        this.onmouseenter = () => this.hovered$.next(true)
-        this.onmouseleave = () => this.hovered$.next(false)
+        this.onclick = (ev) => {
+            this.selectedCell$.next(this.cellState)
+            this.appState.selectCell(this.cellState)
+            ev.stopPropagation()
+        }
     }
 }
 
