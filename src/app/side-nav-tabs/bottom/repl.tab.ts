@@ -600,7 +600,7 @@ export class MoveIconView implements VirtualDOM {
 /**
  * @category View
  */
-export class ReplTopMenuView {
+export class ReplTopMenuView implements VirtualDOM {
     /**
      * @group States
      */
