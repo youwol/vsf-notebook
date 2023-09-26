@@ -3,6 +3,8 @@ import { child$, VirtualDOM } from '@youwol/flux-view'
 import { AppState } from '../../app.state'
 import { ImmutableTree } from '@youwol/fv-tree'
 import { Immutable, Projects, Macros as MacroVsf } from '@youwol/vsf-core'
+import { from, Observable, of } from 'rxjs'
+import { map, mergeMap } from 'rxjs/operators'
 
 /**
  * @category View
@@ -65,6 +67,8 @@ type NodeProjectCategory =
     | 'ApiOut'
     | 'Views'
     | 'View'
+    | 'Worksheets'
+    | 'Worksheet'
 
 /**
  * @category Nodes
@@ -87,7 +91,7 @@ export abstract class NodeProjectBase extends ImmutableTree.Node {
     }: {
         id: string
         name: string
-        children?: NodeProjectBase[]
+        children?: NodeProjectBase[] | Observable<NodeProjectBase[]>
     }) {
         super({ id, children })
         this.name = name
@@ -158,7 +162,17 @@ export class Workflow extends NodeProjectBase {
      */
     public readonly category: NodeProjectCategory = 'Workflow'
 
-    constructor(params: { id: string; name: string; children }) {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly parent: 'main' | 'macro' | 'worksheet'
+
+    constructor(params: {
+        id: string
+        name: string
+        children: NodeProjectBase[]
+        parent: 'main' | 'macro' | 'worksheet'
+    }) {
         super({
             id: params.id,
             name: params.name,
@@ -251,7 +265,58 @@ export class Views extends NodeProjectBase {
      */
     public readonly category: NodeProjectCategory = 'Views'
 
-    constructor(params: { id: string; name: string; children }) {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly parent: 'main' | 'macro' | 'worksheet'
+
+    constructor(params: {
+        id: string
+        name: string
+        children
+        parent: 'main' | 'macro' | 'worksheet'
+    }) {
+        super({
+            id: params.id,
+            name: params.name,
+            children: params.children,
+        })
+        Object.assign(this, params)
+    }
+}
+
+/**
+ * @category Nodes
+ */
+export class Worksheets extends NodeProjectBase {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly category: NodeProjectCategory = 'Worksheets'
+
+    constructor(params: { id: string; name: string; children: Worksheet[] }) {
+        super({
+            id: params.id,
+            name: params.name,
+        })
+        Object.assign(this, params)
+    }
+}
+
+/**
+ * @category Nodes
+ */
+export class Worksheet extends NodeProjectBase {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly category: NodeProjectCategory = 'Worksheet'
+
+    constructor(params: {
+        id: string
+        name: string
+        children: Observable<NodeProjectBase[]>
+    }) {
         super({
             id: params.id,
             name: params.name,
@@ -270,7 +335,9 @@ export class View extends NodeProjectBase {
      */
     public readonly category: NodeProjectCategory = 'View'
 
-    constructor(params: { id: string; name: string }) {
+    public readonly worksheet?: string
+
+    constructor(params: { id: string; name: string; worksheet?: string }) {
         super({
             id: params.id,
             name: params.name,
@@ -278,6 +345,7 @@ export class View extends NodeProjectBase {
         Object.assign(this, params)
     }
 }
+
 export function createLayerNode(parentId: string, layer) {
     return new Layer({
         id: `${parentId}.${layer.uid}`,
@@ -296,6 +364,7 @@ export function createLayerNode(parentId: string, layer) {
 }
 export function createProjectRootNode(
     project: Immutable<Projects.ProjectState>,
+    appState: AppState,
 ) {
     return new ProjectNode({
         id: 'Project',
@@ -304,6 +373,7 @@ export function createProjectRootNode(
             new Workflow({
                 id: 'main',
                 name: 'main',
+                parent: 'main',
                 children: [
                     ...project.main.rootLayer.moduleIds.map(
                         (moduleId) =>
@@ -324,6 +394,7 @@ export function createProjectRootNode(
                     return new Workflow({
                         id: macro.uid,
                         name: macro.uid,
+                        parent: 'macro',
                         children: [
                             new Api({
                                 id: `Api_${macro.uid}`,
@@ -357,9 +428,68 @@ export function createProjectRootNode(
                     })
                 }),
             }),
+            new Worksheets({
+                id: 'worksheets',
+                name: 'Worksheets',
+                children: project.worksheets.map((worksheet) => {
+                    const children = of(worksheet).pipe(
+                        mergeMap((ws) => from(appState.runWorksheet(ws.name))),
+                        map(() => {
+                            const instance = project.runningWorksheets.find(
+                                ({ name }) => name === worksheet.name,
+                            )
+                            return instance
+                                ? [
+                                      new Workflow({
+                                          id: instance.uid,
+                                          name: worksheet.name,
+                                          parent: 'worksheet',
+                                          children: [
+                                              ...instance.workflow.rootLayer.moduleIds.map(
+                                                  (moduleId) =>
+                                                      new ModuleInstance({
+                                                          name: moduleId,
+                                                          id: `main.${moduleId}`,
+                                                      }),
+                                              ),
+                                              ...instance.workflow.rootLayer.children.map(
+                                                  (l) =>
+                                                      createLayerNode(
+                                                          'main',
+                                                          l,
+                                                      ),
+                                              ),
+                                          ],
+                                      }),
+                                      new Views({
+                                          id: `${worksheet.name}~views`,
+                                          name: 'HTML',
+                                          parent: 'worksheet',
+                                          children: Object.entries(
+                                              worksheet.views || {},
+                                          ).map(([k]) => {
+                                              return new View({
+                                                  id: k,
+                                                  name: k,
+                                                  worksheet: worksheet.name,
+                                              })
+                                          }),
+                                      }),
+                                  ]
+                                : undefined
+                        }),
+                    )
+                    return new Worksheet({
+                        id: worksheet.name,
+                        name: worksheet.name,
+                        children: children,
+                    })
+                }),
+            }),
             new Views({
                 id: 'views',
                 name: 'HTML',
+                parent: 'main',
                 children: Object.entries(project.views).map(([k]) => {
                     return new View({ id: k, name: k })
                 }),
@@ -387,6 +517,8 @@ class NodeView implements VirtualDOM {
         ApiOut: 'fas fa-sign-out-alt',
         Views: 'fas fa-code',
         View: 'fas fa-code',
+        Worksheets: 'fas fa-vials ',
+        Worksheet: 'fas fa-vial ',
     }
 
     /**
