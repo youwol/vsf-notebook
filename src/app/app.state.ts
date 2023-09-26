@@ -374,7 +374,7 @@ export class AppState implements StateTrait {
         }
     }
 
-    execute(cell?: Immutable<NotebookCellTrait>): Promise<{
+    async execute(cell?: Immutable<NotebookCellTrait>): Promise<{
         history: Immutable<ProjectByCells>
         project: Projects.ProjectState
     }> {
@@ -629,7 +629,7 @@ export class AppState implements StateTrait {
         tabsToClose.forEach((tab) => this.closeTab(tab))
     }
 
-    public invalidateCell(cell: Immutable<NotebookCellTrait>) {
+    invalidateCell(cell: Immutable<NotebookCellTrait>) {
         const cells = this.cells$.value
         const index = cells.indexOf(cell)
         const remainingCells = cells.slice(index + 1)
