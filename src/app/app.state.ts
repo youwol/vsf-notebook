@@ -73,6 +73,7 @@ export type TabIdentifier = {
     category: TabCategory
     id: string
     name: string
+    isAlive: (project: Immutable<Projects.ProjectState>) => boolean
 }
 
 type ProjectByCellState = Map<
