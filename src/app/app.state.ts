@@ -38,7 +38,9 @@ import {
     map,
     mergeMap,
     shareReplay,
+    skipWhile,
     switchMap,
+    take,
     tap,
 } from 'rxjs/operators'
 import { HttpModels } from '.'
@@ -282,6 +284,7 @@ export class AppState implements StateTrait {
                 console.log('Saved', v)
             })
         this.projectExplorerState$ = toExplorer$({
+            appState: this,
             project$: this.project$,
             expandedNodes: (rootNode) => [rootNode.id, rootNode.children[0].id],
             selectedNode: (rootNode) => rootNode.children[0],
@@ -297,6 +300,7 @@ export class AppState implements StateTrait {
         })
         this.envExplorerState$ = {
             toolboxes: toExplorer$({
+                appState: this,
                 project$: this.project$,
                 expandedNodes: (rootNode) => [rootNode.id],
                 actionDispatch: (node) => {
@@ -310,6 +314,7 @@ export class AppState implements StateTrait {
                 nodeFactory: createEnvRootNode,
             }),
             pools: toExplorer$({
+                appState: this,
                 project$: this.project$,
                 expandedNodes: (rootNode) => [rootNode.id],
                 actionDispatch: () => {
@@ -492,6 +497,11 @@ export class AppState implements StateTrait {
     }
 
     selectCell(cell: NotebookCellTrait) {
+        const project = this.project$.value
+        const runningWs = this.project$.value.runningWorksheets.map(
+            ({ uid }) => uid,
+        )
+        this.closeOutdatedTabs(project.stopWorksheets(runningWs))
         const indexCell = this.cells$.value.indexOf(cell)
         const nextCell = this.cells$.value[indexCell + 1]
         const state = this.projectByCells$.value.get(nextCell)
@@ -645,9 +655,27 @@ export class AppState implements StateTrait {
         })
         this.projectByCells$.next(newHistory)
     }
+
+    async runWorksheet(name: string) {
+        const project = await this.project$.value.runWorksheet(name)
+        this.project$.value !== project && this.project$.next(project)
+        this.projectExplorerState$
+            .pipe(
+                map((state) => state.getNode(name)),
+                skipWhile((node) => node === undefined),
+                take(1),
+                mergeMap((node) => {
+                    return from(node.resolveChildren())
+                }),
+            )
+            .subscribe((children) => {
+                this.openTab(children[0] as Workflow)
+            })
+    }
 }
 
 function toExplorer$<TNode extends ImmutableTree.Node>({
+    appState,
     project$,
     actionDispatch,
     nodeFactory,
@@ -655,9 +683,10 @@ function toExplorer$<TNode extends ImmutableTree.Node>({
     selectedNode,
     onCreated,
 }: {
+    appState: AppState
     project$: Observable<Immutable<Projects.ProjectState>>
     actionDispatch: (node) => void
-    nodeFactory: (project: Projects.ProjectState) => TNode
+    nodeFactory: (project: Projects.ProjectState, appState: AppState) => TNode
     expandedNodes: (rootNode: TNode) => string[]
     selectedNode?: (rootNode: TNode) => TNode
     onCreated?: ({
@@ -673,7 +702,7 @@ function toExplorer$<TNode extends ImmutableTree.Node>({
     const explorer$ = project$.pipe(
         filter((p) => p != undefined),
         map((project) => {
-            const rootNode = nodeFactory(project)
+            const rootNode = nodeFactory(project, appState)
             const state = new ImmutableTree.State<TNode>({
                 rootNode,
                 expandedNodes: expandedNodes(rootNode),

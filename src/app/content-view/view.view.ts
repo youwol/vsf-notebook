@@ -16,7 +16,19 @@ export class ViewTab implements VirtualDOM {
         project: Immutable<Projects.ProjectState>
     }) {
         Object.assign(this, params)
-        const view = this.project.views[this.node.id]
-        this.children = [view(this.project.instancePool)]
+
+        const view = this.node.worksheet
+            ? this.project.worksheets.find(
+                  (ws) => ws.name === this.node.worksheet,
+              )?.views[this.node.id]
+            : this.project.views[this.node.id]
+
+        const instancePool = this.node.worksheet
+            ? this.project.runningWorksheets.find(
+                  (ws) => ws.name === this.node.worksheet,
+              )?.instancePool
+            : this.project.instancePool
+
+        this.children = [view(instancePool)]
     }
 }
