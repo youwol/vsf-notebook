@@ -416,10 +416,33 @@ export class AppState implements StateTrait {
             return
         }
         const opened = this.openTabs$.value
+        let isAlive = (_: Immutable<Projects.ProjectState>) => true
+        if (node.category === 'Workflow' || node.category === 'View') {
+            isAlive = (project: Immutable<Projects.ProjectState>) => {
+                if (node['parent'] === 'main') {
+                    return true
+                }
+                if (node['parent'] === 'macro') {
+                    return (
+                        project.macros.find(({ uid }) => uid === node.id) !==
+                        undefined
+                    )
+                }
+                if (node['parent'] === 'worksheet') {
+                    return (
+                        project.runningWorksheets.find(
+                            ({ uid }) => uid === node.id,
+                        ) !== undefined
+                    )
+                }
+            }
+        }
+
         const nodeId = {
             id: node.id,
             category: node.category,
             name: node.name,
+            isAlive,
         }
         if (!opened.find((n) => n.id == nodeId.id)) {
             this.openTabs$.next([...opened, nodeId])
@@ -577,14 +600,22 @@ export class AppState implements StateTrait {
         this.invalidateCell(cells[newIndex - 1])
     }
 
-    private closeOutdatedTabs(project: Projects.ProjectState) {
+    private closeOutdatedTabs(project: Immutable<Projects.ProjectState>) {
         const selections = [
             this.selectedModulesView$,
             this.selectedModulesJournal$,
             this.selectedModulesDocumentation$,
         ]
+        const instancePools = [
+            project.instancePool,
+            ...project.runningWorksheets.map(
+                ({ instancePool }) => instancePool,
+            ),
+        ]
+        const modules = instancePools
+            .map((instancePool) => instancePool.inspector().flat().modules)
+            .flat()
         selections.forEach((selected$) => {
-            const { modules } = project.instancePool.inspector().flat()
             const displayedModules = selected$.value
             const toKeep = displayedModules.filter(
                 (m: Immutable<Modules.ImplementationTrait>) =>
@@ -592,6 +623,10 @@ export class AppState implements StateTrait {
             )
             selected$.next(toKeep)
         })
+        const tabsToClose = this.openTabs$.value.filter((tab) => {
+            return !tab.isAlive(project)
+        })
+        tabsToClose.forEach((tab) => this.closeTab(tab))
     }
 
     public invalidateCell(cell: Immutable<NotebookCellTrait>) {
