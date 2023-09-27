@@ -2,9 +2,13 @@ import { DockableTabs } from '@youwol/fv-tabs'
 import { Common } from '@youwol/fv-code-mirror-editors'
 import { child$, childrenFromStore$, VirtualDOM } from '@youwol/flux-view'
 import { AppState } from '../../../app.state'
-import { BehaviorSubject, Observable, Subject } from 'rxjs'
+import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs'
 import { Projects, Immutable, asMutable } from '@youwol/vsf-core'
-import { CellMarkdownState, cellMarkdownView } from './cell-markdown'
+import {
+    CellMarkdownState,
+    cellMarkdownView,
+    TableOfContentView,
+} from './cell-markdown'
 import {
     CellCodeState,
     cellCodeView,
@@ -73,6 +77,7 @@ export class ReplTab extends DockableTabs.Tab {
     >(undefined)
     constructor({ state }: { state: AppState }) {
         const scrollableElement$ = new Subject<HTMLElement>()
+        const markdownUpdate$ = new ReplaySubject<boolean>(1)
         super({
             id: 'REPL',
             title: 'REPL',
@@ -105,19 +110,30 @@ export class ReplTab extends DockableTabs.Tab {
                             ],
                         },
                         {
-                            class: 'flex-grow-1 w-100 overflow-auto',
-                            connectedCallback: (d: HTMLElement) => {
-                                d.scroll({ top: 0 })
-                                scrollableElement$.next(d)
+                            class: 'd-flex flex-grow-1 w-100',
+                            style: {
+                                minHeight: '0px',
                             },
                             children: [
+                                {
+                                    class: 'w-25 h-100',
+                                    children: [
+                                        new TableOfContentView({
+                                            markdownUpdate$,
+                                        }),
+                                    ],
+                                },
                                 {
                                     style: {
                                         minHeight: '0px',
                                         maxWidth: '800px',
                                         textAlign: 'justify',
                                     },
-                                    class: 'h-100 w-75 d-flex flex-column mx-auto',
+                                    class: 'h-100 w-75 px-4 d-flex flex-column mx-auto  overflow-auto',
+                                    connectedCallback: (d: HTMLElement) => {
+                                        d.scroll({ top: 0 })
+                                        scrollableElement$.next(d)
+                                    },
                                     children: childrenFromStore$(
                                         asMutable<
                                             Observable<NotebookCellTrait[]>
@@ -156,6 +172,7 @@ export class ReplTab extends DockableTabs.Tab {
                                                           state,
                                                           cellState,
                                                           this.selectedCell$,
+                                                          markdownUpdate$,
                                                       )
                                             return {
                                                 children: [
