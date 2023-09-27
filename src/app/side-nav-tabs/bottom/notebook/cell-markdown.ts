@@ -1,5 +1,5 @@
 import { AppState } from '../../../app.state'
-import { BehaviorSubject, Observable, Subject } from 'rxjs'
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs'
 import { Immutable, Projects } from '@youwol/vsf-core'
 import { Common } from '@youwol/fv-code-mirror-editors'
 import {
@@ -179,6 +179,10 @@ export class TableOfContentView implements VirtualDOM {
      */
     public readonly markdownUpdate$: Observable<boolean>
     /**
+     * @group Immutable Constant
+     */
+    public readonly scrollableElement$: Observable<HTMLElement>
+    /**
      * @group Immutable DOM Constant
      */
     public readonly class = 'w-100 h-100 overflow-auto'
@@ -187,8 +191,12 @@ export class TableOfContentView implements VirtualDOM {
      */
     public readonly children: VirtualDOM[]
 
-    constructor(params: { markdownUpdate$: Observable<boolean> }) {
+    constructor(params: {
+        markdownUpdate$: Observable<boolean>
+        scrollableElement$: Observable<HTMLElement>
+    }) {
         Object.assign(this, params)
+        const highlighted$ = new BehaviorSubject<HTMLElement>(undefined)
         this.children = [
             {
                 tag: 'h3',
@@ -196,13 +204,46 @@ export class TableOfContentView implements VirtualDOM {
                 innerText: 'Table of content',
             },
             child$(
-                this.markdownUpdate$.pipe(debounceTime(100)),
-                () => {
-                    const sections =
-                        document.querySelectorAll('.vsf-nb-section')
+                combineLatest([
+                    this.markdownUpdate$.pipe(debounceTime(100)),
+                    this.scrollableElement$,
+                ]),
+                ([_, scroller]) => {
+                    const maxHeight = scroller.getBoundingClientRect().height
+                    scroller.onscroll = () => {
+                        const a = retrieveSections()
+                            .map((e: HTMLElement) => ({
+                                e,
+                                top:
+                                    e.getBoundingClientRect().top -
+                                    scroller.getBoundingClientRect().top,
+                            }))
+                            .filter(({ top }) => top < maxHeight)
+                        a.reverse()
+                        const element =
+                            a[0].top < 0
+                                ? a[0].e
+                                : a.reduce((acc, e) => (e.top < 0 ? acc : e)).e
+                        highlighted$.next(element)
+                    }
                     return {
-                        children: [...sections].map((e: HTMLElement) => {
+                        connectedCallback: () => {
+                            // The next line force 'highlighting' the current section
+                            scroller.onscroll(undefined)
+                        },
+                        children: retrieveSections().map((e: HTMLElement) => {
                             return {
+                                class: attr$(
+                                    highlighted$,
+                                    (highlighted): string =>
+                                        highlighted === e
+                                            ? 'fv-text-secondary fv-xx-lighter'
+                                            : '',
+                                    {
+                                        wrapper: (d) =>
+                                            `${d} fv-pointer fv-hover-text-focus`,
+                                    },
+                                ),
                                 style: {
                                     paddingLeft: `${
                                         15 * parseInt(e.dataset.level)
@@ -212,6 +253,16 @@ export class TableOfContentView implements VirtualDOM {
                                     textOverflow: 'ellipsis',
                                 },
                                 innerText: e.dataset.title,
+                                onclick: () => {
+                                    scroller.scroll({
+                                        top:
+                                            e.getBoundingClientRect().top -
+                                            scroller.getBoundingClientRect()
+                                                .top +
+                                            scroller.scrollTop,
+                                        behavior: 'smooth',
+                                    })
+                                },
                             }
                         }),
                     }
@@ -225,4 +276,14 @@ export class TableOfContentView implements VirtualDOM {
             ),
         ]
     }
+}
+
+function retrieveSections() {
+    const sections = new Array(
+        ...document.querySelectorAll('.vsf-nb-section'),
+    ) as HTMLElement[]
+    sections.sort(
+        (a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top,
+    )
+    return sections
 }
