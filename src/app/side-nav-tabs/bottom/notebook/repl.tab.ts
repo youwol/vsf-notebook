@@ -78,6 +78,7 @@ export class ReplTab extends DockableTabs.Tab {
     constructor({ state }: { state: AppState }) {
         const scrollableElement$ = new Subject<HTMLElement>()
         const markdownUpdate$ = new ReplaySubject<boolean>(1)
+        state.cells$.subscribe(() => markdownUpdate$.next(true))
         super({
             id: 'REPL',
             title: 'REPL',
@@ -120,6 +121,7 @@ export class ReplTab extends DockableTabs.Tab {
                                     children: [
                                         new TableOfContentView({
                                             markdownUpdate$,
+                                            scrollableElement$,
                                         }),
                                     ],
                                 },
