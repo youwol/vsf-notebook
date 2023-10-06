@@ -497,7 +497,7 @@ export function createProjectRootNode(
             }),
             new Views({
                 id: 'views',
-                name: 'HTML',
+                name: 'Views',
                 parent: 'main',
                 children: Object.entries(project.views).map(([k]) => {
                     return new View({ id: k, name: k })
