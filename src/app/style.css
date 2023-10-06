@@ -14,3 +14,8 @@
 .fv-tree-header{
     margin-top: 5px
 }
+
+blockquote{
+    border-left: solid aliceblue;
+    padding-left: 20px;
+}
