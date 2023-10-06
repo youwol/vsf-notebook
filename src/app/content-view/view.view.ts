@@ -18,14 +18,14 @@ export class ViewTab implements VirtualDOM {
         Object.assign(this, params)
 
         const view = this.node.worksheet
-            ? this.project.worksheets.find(
-                  (ws) => ws.name === this.node.worksheet,
-              )?.views[this.node.id]
+            ? this.project.worksheets
+                  .find((ws) => ws.id === this.node.worksheet)
+                  ?.views.find(({ id }) => id === this.node.name)?.html
             : this.project.views[this.node.id]
 
         const instancePool = this.node.worksheet
             ? this.project.runningWorksheets.find(
-                  (ws) => ws.name === this.node.worksheet,
+                  (ws) => ws.worksheetId === this.node.worksheet,
               )?.instancePool
             : this.project.instancePool
 
