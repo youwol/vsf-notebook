@@ -126,70 +126,87 @@ export class ReplTab extends DockableTabs.Tab {
                                     ],
                                 },
                                 {
-                                    style: {
-                                        minHeight: '0px',
-                                        maxWidth: '800px',
-                                        textAlign: 'justify',
-                                    },
-                                    class: 'h-100 w-75 px-4 d-flex flex-column mx-auto  overflow-auto',
+                                    class: 'h-100 flex-grow-1 overflow-auto',
                                     connectedCallback: (d: HTMLElement) => {
                                         d.scroll({ top: 0 })
                                         scrollableElement$.next(d)
                                     },
-                                    children: childrenFromStore$(
-                                        asMutable<
-                                            Observable<NotebookCellTrait[]>
-                                        >(state.cells$),
-                                        (cellState) => {
-                                            const preCellView =
-                                                new CellsSeparatorView({
-                                                    state,
-                                                    refCell: cellState,
-                                                    position: 'before',
-                                                })
-                                            const maybePostCellView =
-                                                new CellsSeparatorView({
-                                                    state,
-                                                    refCell: cellState,
-                                                    position: 'after',
-                                                })
-                                            const postCellView = child$(
-                                                state.cells$,
-                                                (cells) => {
-                                                    const lastCell =
-                                                        cells.slice(-1)[0]
-                                                    return lastCell == cellState
-                                                        ? maybePostCellView
-                                                        : {}
-                                                },
-                                            )
-                                            const content =
-                                                cellState.mode == 'code'
-                                                    ? cellCodeView(
-                                                          state,
-                                                          cellState as CellCodeState,
-                                                          this.selectedCell$,
-                                                      )
-                                                    : cellMarkdownView(
-                                                          state,
-                                                          cellState,
-                                                          this.selectedCell$,
-                                                          markdownUpdate$,
-                                                      )
-                                            return {
-                                                children: [
-                                                    preCellView,
-                                                    content,
-                                                    postCellView,
-                                                ],
-                                            }
-                                        },
+                                    children: [
                                         {
-                                            orderOperator: (a, b) =>
-                                                state.cells$.value.indexOf(a) -
-                                                state.cells$.value.indexOf(b),
+                                            style: {
+                                                minHeight: '0px',
+                                                maxWidth: '800px',
+                                                textAlign: 'justify',
+                                            },
+                                            class: 'h-100 w-75 px-4 d-flex flex-column mx-auto',
+
+                                            children: childrenFromStore$(
+                                                asMutable<
+                                                    Observable<
+                                                        NotebookCellTrait[]
+                                                    >
+                                                >(state.cells$),
+                                                (cellState) => {
+                                                    const preCellView =
+                                                        new CellsSeparatorView({
+                                                            state,
+                                                            refCell: cellState,
+                                                            position: 'before',
+                                                        })
+                                                    const maybePostCellView =
+                                                        new CellsSeparatorView({
+                                                            state,
+                                                            refCell: cellState,
+                                                            position: 'after',
+                                                        })
+                                                    const postCellView = child$(
+                                                        state.cells$,
+                                                        (cells) => {
+                                                            const lastCell =
+                                                                cells.slice(
+                                                                    -1,
+                                                                )[0]
+                                                            return lastCell ==
+                                                                cellState
+                                                                ? maybePostCellView
+                                                                : {}
+                                                        },
+                                                    )
+                                                    const content =
+                                                        cellState.mode == 'code'
+                                                            ? cellCodeView(
+                                                                  state,
+                                                                  cellState as CellCodeState,
+                                                                  this
+                                                                      .selectedCell$,
+                                                              )
+                                                            : cellMarkdownView(
+                                                                  state,
+                                                                  cellState,
+                                                                  this
+                                                                      .selectedCell$,
+                                                                  markdownUpdate$,
+                                                              )
+                                                    return {
+                                                        children: [
+                                                            preCellView,
+                                                            content,
+                                                            postCellView,
+                                                        ],
+                                                    }
+                                                },
+                                                {
+                                                    orderOperator: (a, b) =>
+                                                        state.cells$.value.indexOf(
+                                                            a,
+                                                        ) -
+                                                        state.cells$.value.indexOf(
+                                                            b,
+                                                        ),
+                                                },
+                                            ),
                                         },
-                                    ),
+                                    ],
                                 },
                             ],
                         },
