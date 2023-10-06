@@ -32,7 +32,7 @@ function instrumentMardownSource(source: string) {
     }
     const lines = source.split('\n').map((line) => {
         line = line.trim()
-        const { value } = ['###', '##', '#'].reduce(
+        const { value } = ['#####', '####', '###', '##', '#'].reduce(
             (acc, e) => {
                 return acc.parsed ? acc : adapt(line, e)
             },
@@ -185,7 +185,7 @@ export class TableOfContentView implements VirtualDOM {
     /**
      * @group Immutable DOM Constant
      */
-    public readonly class = 'w-100 h-100 overflow-auto'
+    public readonly class = 'w-100 h-100 overflow-auto fv-bg-background-alt'
     /**
      * @group Immutable DOM Constant
      */
