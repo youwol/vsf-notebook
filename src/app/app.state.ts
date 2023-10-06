@@ -661,12 +661,14 @@ export class AppState implements StateTrait {
         this.project$.value !== project && this.project$.next(project)
         this.projectExplorerState$
             .pipe(
-                map((state) => state.getNode(name)),
+                map((state) => ({ state, node: state.getNode(name) })),
                 skipWhile((node) => node === undefined),
-                take(1),
-                mergeMap((node) => {
-                    return from(node.resolveChildren())
+                mergeMap(({ state, node }) => {
+                    const children$ = state.getChildren$(node)
+                    state.getChildren(node)
+                    return children$
                 }),
+                take(1),
             )
             .subscribe((children) => {
                 this.openTab(children[0] as Workflow)

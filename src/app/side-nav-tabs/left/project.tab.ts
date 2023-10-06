@@ -4,7 +4,7 @@ import { AppState } from '../../app.state'
 import { ImmutableTree } from '@youwol/fv-tree'
 import { Immutable, Projects, Macros as MacroVsf } from '@youwol/vsf-core'
 import { from, Observable, of } from 'rxjs'
-import { map, mergeMap } from 'rxjs/operators'
+import { map, mergeMap, take } from 'rxjs/operators'
 
 /**
  * @category View
@@ -433,16 +433,25 @@ export function createProjectRootNode(
                 name: 'Worksheets',
                 children: project.worksheets.map((worksheet) => {
                     const children = of(worksheet).pipe(
-                        mergeMap((ws) => from(appState.runWorksheet(ws.name))),
-                        map(() => {
+                        mergeMap((ws) => {
                             const instance = project.runningWorksheets.find(
-                                ({ name }) => name === worksheet.name,
+                                ({ worksheetId }) =>
+                                    worksheetId === worksheet.id,
                             )
+                            if (!instance) {
+                                return from(appState.runWorksheet(ws.id)).pipe(
+                                    map(() => undefined),
+                                )
+                            }
+                            return of(instance)
+                        }),
+                        take(1),
+                        map((instance) => {
                             return instance
                                 ? [
                                       new Workflow({
                                           id: instance.uid,
-                                          name: worksheet.name,
+                                          name: worksheet.id,
                                           parent: 'worksheet',
                                           children: [
                                               ...instance.workflow.rootLayer.moduleIds.map(
@@ -462,26 +471,26 @@ export function createProjectRootNode(
                                           ],
                                       }),
                                       new Views({
-                                          id: `${worksheet.name}~views`,
-                                          name: 'HTML',
+                                          id: `${worksheet.id}_views`,
+                                          name: 'Views',
                                           parent: 'worksheet',
-                                          children: Object.entries(
-                                              worksheet.views || {},
-                                          ).map(([k]) => {
-                                              return new View({
-                                                  id: k,
-                                                  name: k,
-                                                  worksheet: worksheet.name,
-                                              })
-                                          }),
+                                          children: worksheet.views?.map(
+                                              ({ id }) => {
+                                                  return new View({
+                                                      id: `${worksheet.id}~view~${id}`,
+                                                      name: id,
+                                                      worksheet: worksheet.id,
+                                                  })
+                                              },
+                                          ),
                                       }),
                                   ]
                                 : undefined
                         }),
                     )
                     return new Worksheet({
-                        id: worksheet.name,
-                        name: worksheet.name,
+                        id: worksheet.id,
+                        name: worksheet.id,
                         children: children,
                     })
                 }),
