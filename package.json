@@ -55,8 +55,8 @@
         ]
     },
     "dependencies": {
-        "@youwol/vsf-core": "^0.2.1",
-        "@youwol/vsf-canvas": "^0.2.1",
+        "@youwol/vsf-core": "^0.2.3",
+        "@youwol/vsf-canvas": "^0.2.2",
         "rxjs": "^6.5.5",
         "@youwol/logging": "^0.1.1",
         "@youwol/http-clients": "^2.0.5",
@@ -72,10 +72,10 @@
         "d3-dag": "0.8.2",
         "client-zip": "2.3.0"
     },
-    "youwol": {
-        "cdnDependencies": {
-            "@youwol/vsf-core": "^0.2.1",
-            "@youwol/vsf-canvas": "^0.2.1",
+    "webpm": {
+        "dependencies": {
+            "@youwol/vsf-core": "^0.2.3",
+            "@youwol/vsf-canvas": "^0.2.2",
             "rxjs": "^6.5.5",
             "@youwol/logging": "^0.1.1",
             "@youwol/http-clients": "^2.0.5",
@@ -88,6 +88,7 @@
             "@youwol/fv-tree": "^0.2.3",
             "three": "^0.152.0",
             "marked": "^4.2.3"
-        }
+        },
+        "aliases": []
     }
 }
