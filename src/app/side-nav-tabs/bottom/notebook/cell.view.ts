@@ -3,7 +3,7 @@ import { attr$, child$, Stream$, VirtualDOM } from '@youwol/flux-view'
 import { Immutable, Immutables } from '@youwol/vsf-core'
 import { Subject } from 'rxjs'
 import { Common } from '@youwol/fv-code-mirror-editors'
-import { NotebookCellTrait } from './repl.tab'
+import { NotebookCellTrait } from './notebook.tab'
 import { CellCodeState } from './cell-javascript'
 
 export class CellWrapperView {

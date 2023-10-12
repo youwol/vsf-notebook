@@ -1,2 +1,2 @@
-export * from './repl.tab'
+export * from './notebook.tab'
 export * from './cell-javascript'

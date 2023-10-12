@@ -9,7 +9,7 @@ import {
 import { Configurations, Immutable, Projects } from '@youwol/vsf-core'
 import { attr$, childrenFromStore$, VirtualDOM } from '@youwol/flux-view'
 import { CellWrapperView } from './cell.view'
-import { NotebookCellTrait } from './repl.tab'
+import { NotebookCellTrait } from './notebook.tab'
 import { Common } from '@youwol/fv-code-mirror-editors'
 import { map, scan, skip } from 'rxjs/operators'
 

@@ -11,7 +11,7 @@ import {
 import { downloadZip } from 'client-zip'
 import {
     ProjectTab,
-    ReplTab,
+    NotebookTab,
     EnvironmentTab,
     NodeProjectBase,
     ModuleInstance,
@@ -347,13 +347,13 @@ export class AppState implements StateTrait {
             disposition: 'bottom',
             viewState$: new BehaviorSubject<DockableTabs.DisplayMode>('pined'),
             tabs$: new BehaviorSubject([
-                new ReplTab({ state: this }),
+                new NotebookTab({ state: this }),
                 new ViewsTab({ state: this }),
                 new JournalsTab({ state: this }),
                 new DocumentationsTab({ state: this }),
                 new WorkersTab({ state: this }),
             ]),
-            selected$: new BehaviorSubject<string>('REPL'),
+            selected$: new BehaviorSubject<string>('Notebook'),
             persistTabsView: true,
         })
         this.leftSideNavState = new DockableTabs.State({

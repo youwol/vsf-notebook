@@ -12,7 +12,7 @@ import {
 } from 'rxjs/operators'
 import { attr$, child$, VirtualDOM } from '@youwol/flux-view'
 import { CellWrapperView } from './cell.view'
-import { NotebookCellTrait } from './repl.tab'
+import { NotebookCellTrait } from './notebook.tab'
 
 function instrumentMardownSource(source: string) {
     let n = 0

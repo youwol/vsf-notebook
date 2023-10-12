@@ -71,7 +71,7 @@ export class ScrollerActionsView {
 /**
  * @category View
  */
-export class ReplTab extends DockableTabs.Tab {
+export class NotebookTab extends DockableTabs.Tab {
     public readonly selectedCell$ = new BehaviorSubject<
         Immutable<NotebookCellTrait>
     >(undefined)
@@ -80,8 +80,8 @@ export class ReplTab extends DockableTabs.Tab {
         const markdownUpdate$ = new ReplaySubject<boolean>(1)
         state.cells$.subscribe(() => markdownUpdate$.next(true))
         super({
-            id: 'REPL',
-            title: 'REPL',
+            id: 'Notebook',
+            title: 'Notebook',
             icon: 'fas fa-code',
             content: () => {
                 return {
