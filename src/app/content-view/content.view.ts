@@ -109,7 +109,7 @@ export class ContentView implements VirtualDOM {
                         const view = viewFactory(nodeId, this.state)
                         return {
                             class: attr$(this.state.selectedTab$, (selected) =>
-                                selected.id == nodeId.id
+                                selected && selected.id == nodeId.id
                                     ? 'w-100 h-100'
                                     : 'd-none',
                             ),
@@ -156,7 +156,7 @@ export class FilesHeaderView implements VirtualDOM {
                     class: attr$(
                         this.appState.selectedTab$,
                         (selected): string =>
-                            selected.id == tabId.id
+                            selected && selected.id == tabId.id
                                 ? 'fv-text-focus fv-bg-background-alt'
                                 : 'fv-text-primary fv-bg-background',
                         {
@@ -174,16 +174,14 @@ export class FilesHeaderView implements VirtualDOM {
                             innerText: tabId.name,
                         },
                         { class: 'mx-1' },
-                        tabId.id == 'main'
-                            ? {}
-                            : {
-                                  style: { transform: 'scale(0.8)' },
-                                  class: 'fas fa-times fv-text-disabled rounded-circle p-1 fv-hover-text-error',
-                                  onclick: (ev: MouseEvent) => {
-                                      this.appState.closeTab(tabId)
-                                      ev.stopPropagation()
-                                  },
-                              },
+                        {
+                            style: { transform: 'scale(0.8)' },
+                            class: 'fas fa-times fv-text-disabled rounded-circle p-1 fv-hover-text-error',
+                            onclick: (ev: MouseEvent) => {
+                                this.appState.closeTab(tabId)
+                                ev.stopPropagation()
+                            },
+                        },
                     ],
                     onclick: () => {
                         combineLatest([
