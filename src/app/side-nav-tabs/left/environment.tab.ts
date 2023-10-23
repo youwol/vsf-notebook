@@ -6,9 +6,10 @@ import {
     NodeWorkersBase,
     WorkersNodeView,
     NodeToolboxesBase,
-    NodeView,
+    LibNodeView,
+    NodeLibrariesBase,
 } from './environment'
-
+import { NodeView as TbNodeView } from './environment/toolboxes.view'
 /**
  * @category View
  */
@@ -50,7 +51,15 @@ export class EnvironmentExplorerView implements VirtualDOM {
                 return new ImmutableTree.View({
                     state,
                     headerView: (state, node: NodeToolboxesBase) => {
-                        return new NodeView({ state, node })
+                        return new TbNodeView({ state, node })
+                    },
+                })
+            }),
+            child$(this.state.envExplorerState$.libraries, (state) => {
+                return new ImmutableTree.View({
+                    state,
+                    headerView: (state, node: NodeLibrariesBase) => {
+                        return new LibNodeView({ state, node })
                     },
                 })
             }),
