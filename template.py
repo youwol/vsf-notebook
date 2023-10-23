@@ -48,7 +48,7 @@ template = Template(
         ),
         devTime={
             # `@types/lz-string` required for documentation step
-            "@types/lz-string": "^1.5.0"
+            # "@types/lz-string": "^1.5.0"
         },
     ),
     userGuide=True,
