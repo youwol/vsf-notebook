@@ -18,17 +18,17 @@ folder_path = Path(__file__).parent
 pkg_json = parse_json(folder_path / "package.json")
 
 load_dependencies = {
-    "@youwol/vsf-core": "^0.2.3",
+    "@youwol/vsf-core": "^0.2.4",
     "@youwol/vsf-canvas": "^0.2.2",
     "rxjs": "^6.5.5",
     "@youwol/logging": "^0.1.1",
     "@youwol/http-clients": "^2.0.5",
     "@youwol/http-primitives": "^0.1.2",
     "@youwol/flux-view": "^1.1.0",
-    "@youwol/cdn-client": "^2.0.6",
+    "@youwol/cdn-client": "^2.1.2",
     "@youwol/fv-tabs": "^0.2.1",
     "@youwol/os-top-banner": "^0.1.1",
-    "@youwol/fv-code-mirror-editors": "^0.2.2",
+    "@youwol/fv-code-mirror-editors": "^0.3.1",
     "@youwol/fv-tree": "^0.2.3",
     "three": "^0.152.0",
     "marked": "^4.2.3",
