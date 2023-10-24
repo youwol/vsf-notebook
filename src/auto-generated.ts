@@ -1,17 +1,17 @@
 
 const runTimeDependencies = {
     "externals": {
-        "@youwol/vsf-core": "^0.2.3",
+        "@youwol/vsf-core": "^0.2.4",
         "@youwol/vsf-canvas": "^0.2.2",
         "rxjs": "^6.5.5",
         "@youwol/logging": "^0.1.1",
         "@youwol/http-clients": "^2.0.5",
         "@youwol/http-primitives": "^0.1.2",
         "@youwol/flux-view": "^1.1.0",
-        "@youwol/cdn-client": "^2.0.6",
+        "@youwol/cdn-client": "^2.1.2",
         "@youwol/fv-tabs": "^0.2.1",
         "@youwol/os-top-banner": "^0.1.1",
-        "@youwol/fv-code-mirror-editors": "^0.2.2",
+        "@youwol/fv-code-mirror-editors": "^0.3.1",
         "@youwol/fv-tree": "^0.2.3",
         "three": "^0.152.0",
         "marked": "^4.2.3"
@@ -32,7 +32,7 @@ const externals = {
     "@youwol/cdn-client": "window['@youwol/cdn-client_APIv2']",
     "@youwol/fv-tabs": "window['@youwol/fv-tabs_APIv02']",
     "@youwol/os-top-banner": "window['@youwol/os-top-banner_APIv01']",
-    "@youwol/fv-code-mirror-editors": "window['@youwol/fv-code-mirror-editors_APIv02']",
+    "@youwol/fv-code-mirror-editors": "window['@youwol/fv-code-mirror-editors_APIv03']",
     "@youwol/fv-tree": "window['@youwol/fv-tree_APIv02']",
     "three": "window['THREE_APIv0152']",
     "marked": "window['marked_APIv4']",
@@ -80,7 +80,7 @@ const exportedSymbols = {
         "exportedSymbol": "@youwol/os-top-banner"
     },
     "@youwol/fv-code-mirror-editors": {
-        "apiKey": "02",
+        "apiKey": "03",
         "exportedSymbol": "@youwol/fv-code-mirror-editors"
     },
     "@youwol/fv-tree": {
@@ -126,7 +126,7 @@ const entries = {
 export const setup = {
     name:'@youwol/vsf-notebook',
         assetId:'QHlvdXdvbC92c2Ytbm90ZWJvb2s=',
-    version:'0.1.1',
+    version:'0.1.2',
     shortDescription:"",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/vsf-notebook&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/vsf-notebook',
@@ -172,7 +172,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/vsf-notebook#0.1.1~dist/@youwol/vsf-notebook/${entry.name}.js`
+            `@youwol/vsf-notebook#0.1.2~dist/@youwol/vsf-notebook/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),

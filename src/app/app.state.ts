@@ -28,6 +28,8 @@ import {
     ToolboxNode,
     ModuleNode,
     plugWorkersPoolUpdate,
+    NodeLibrariesBase,
+    createEnvLibRootNode,
 } from './side-nav-tabs'
 
 import { ImmutableTree } from '@youwol/fv-tree'
@@ -161,6 +163,7 @@ export class AppState implements StateTrait {
      */
     public readonly envExplorerState$: {
         toolboxes: Observable<ImmutableTree.State<NodeToolboxesBase>>
+        libraries: Observable<ImmutableTree.State<NodeLibrariesBase>>
         pools: Observable<ImmutableTree.State<NodeWorkersBase>>
     }
 
@@ -312,6 +315,15 @@ export class AppState implements StateTrait {
                     }
                 },
                 nodeFactory: createEnvRootNode,
+            }),
+            libraries: toExplorer$({
+                appState: this,
+                project$: this.project$,
+                expandedNodes: (rootNode) => [rootNode.id],
+                actionDispatch: () => {
+                    // No op
+                },
+                nodeFactory: createEnvLibRootNode,
             }),
             pools: toExplorer$({
                 appState: this,
