@@ -47,8 +47,7 @@ template = Template(
             includedInBundle={"d3-dag": "0.8.2", "client-zip": "2.3.0"},
         ),
         devTime={
-            # `@types/lz-string` required for documentation step
-            # "@types/lz-string": "^1.5.0"
+            "lz-string": "^1.4.4",  # Required to generate doc
         },
     ),
     userGuide=True,
