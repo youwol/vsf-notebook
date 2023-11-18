@@ -1,7 +1,7 @@
 {
     "name": "@youwol/vsf-notebook",
     "description": "",
-    "version": "0.1.2",
+    "version": "0.1.3-wip",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/vsf-notebook#README.md",
     "main": "dist/index.html",
@@ -36,18 +36,20 @@
         "@youwol/http-clients": "^2.0.5",
         "@youwol/http-primitives": "^0.1.2",
         "@youwol/flux-view": "^1.1.0",
-        "@youwol/cdn-client": "^2.1.2",
         "@youwol/fv-tabs": "^0.2.1",
         "@youwol/os-top-banner": "^0.1.1",
         "@youwol/fv-code-mirror-editors": "^0.3.1",
         "@youwol/fv-tree": "^0.2.3",
         "three": "^0.152.0",
         "marked": "^4.2.3",
+        "@youwol/rx-vdom": "^1.0.1",
+        "@youwol/webpm-client": "^2.2.0",
         "d3-dag": "0.8.2",
         "client-zip": "2.3.0"
     },
     "devDependencies": {
         "lz-string": "^1.4.4",
+        "@youwol/cdn-client": "^2.1.2",
         "@types/jest": "^29.5.6",
         "@types/node": "^18.9.1",
         "@types/webpack": "^5.28.0",
@@ -80,13 +82,14 @@
             "@youwol/http-clients": "^2.0.5",
             "@youwol/http-primitives": "^0.1.2",
             "@youwol/flux-view": "^1.1.0",
-            "@youwol/cdn-client": "^2.1.2",
             "@youwol/fv-tabs": "^0.2.1",
             "@youwol/os-top-banner": "^0.1.1",
             "@youwol/fv-code-mirror-editors": "^0.3.1",
             "@youwol/fv-tree": "^0.2.3",
             "three": "^0.152.0",
-            "marked": "^4.2.3"
+            "marked": "^4.2.3",
+            "@youwol/rx-vdom": "^1.0.1",
+            "@youwol/webpm-client": "^2.2.0"
         },
         "aliases": []
     }
