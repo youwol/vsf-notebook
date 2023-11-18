@@ -25,6 +25,7 @@ load_dependencies = {
     "@youwol/http-clients": "^2.0.5",
     "@youwol/http-primitives": "^0.1.2",
     "@youwol/flux-view": "^1.1.0",
+    "@youwol/rx-vdom": "^1.0.1",
     "@youwol/webpm-client": "^2.2.0",
     "@youwol/fv-tabs": "^0.2.1",
     "@youwol/os-top-banner": "^0.1.1",
@@ -70,7 +71,7 @@ for file in [
     "README.md",
     "package.json",
     "jest.config.ts",
-    "tsconfig.json",
+    # "tsconfig.json", need to reference rx-vdom-config.ts
     "webpack.config.ts",
 ]:
     shutil.copyfile(src=folder_path / ".template" / file, dst=folder_path / file)
