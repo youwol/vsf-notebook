@@ -1,8 +1,8 @@
-import { Client, LoadingScreenView } from '@youwol/cdn-client'
+import { Client, LoadingScreenView } from '@youwol/webpm-client'
 
 require('./style.css')
 export {}
-import * as cdnClient from '@youwol/cdn-client'
+import * as webpmClient from '@youwol/webpm-client'
 import { setup } from '../auto-generated'
 
 const loadingScreen = new LoadingScreenView()
@@ -12,7 +12,7 @@ loadingScreen.render()
  *  This file handle the actual installation of them (if needed, they will most likely already be cached by the browser).
  */
 await setup.installMainModule({
-    cdnClient,
+    cdnClient: webpmClient,
     installParameters: {
         css: [
             'bootstrap#4.4.1~bootstrap.min.css',

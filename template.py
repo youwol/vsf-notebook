@@ -25,7 +25,7 @@ load_dependencies = {
     "@youwol/http-clients": "^2.0.5",
     "@youwol/http-primitives": "^0.1.2",
     "@youwol/flux-view": "^1.1.0",
-    "@youwol/cdn-client": "^2.1.2",
+    "@youwol/webpm-client": "^2.2.0",
     "@youwol/fv-tabs": "^0.2.1",
     "@youwol/os-top-banner": "^0.1.1",
     "@youwol/fv-code-mirror-editors": "^0.3.1",
@@ -48,6 +48,8 @@ template = Template(
         ),
         devTime={
             "lz-string": "^1.4.4",  # Required to generate doc
+            # @youwol/logging needs it
+            "@youwol/cdn-client": "^2.1.2",
         },
     ),
     userGuide=True,

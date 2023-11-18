@@ -1,8 +1,8 @@
 import { ImmutableTree } from '@youwol/fv-tree'
-// eslint-disable-next-line import/namespace -- Parse errors in imported module '@youwol/vsf-core': Identifier expected.
+
 import { Immutable, Projects, Immutables } from '@youwol/vsf-core'
 import { attr$, children$, Stream$, VirtualDOM } from '@youwol/flux-view'
-import { WorkersPoolTypes } from '@youwol/cdn-client'
+import { WorkersPoolTypes } from '@youwol/webpm-client'
 import { map, mergeMap, tap } from 'rxjs/operators'
 import { merge, Observable, of } from 'rxjs'
 
@@ -228,8 +228,8 @@ export class WorkersNodeView implements VirtualDOM {
             this.node instanceof PoolNode
                 ? new PoolInstancesView(this.node)
                 : this.node instanceof WorkerNode
-                ? new WorkerSuffixView({ node: this.node })
-                : {},
+                  ? new WorkerSuffixView({ node: this.node })
+                  : {},
         ]
     }
 }

@@ -62,7 +62,7 @@ import { ViewsTab } from './side-nav-tabs/bottom/views'
 import { JournalsTab } from './side-nav-tabs/bottom/journals'
 import { DocumentationsTab } from './side-nav-tabs/bottom/documentations'
 import { ConfigTab } from './side-nav-tabs/right/config'
-import { WorkersPoolTypes } from '@youwol/cdn-client'
+import { WorkersPoolTypes } from '@youwol/webpm-client'
 import { WorkersTab } from './side-nav-tabs/bottom/workers'
 
 type ProjectByCells = Map<NotebookCellTrait, Immutable<Projects.ProjectState>>

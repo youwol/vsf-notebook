@@ -12,7 +12,8 @@ import { asMutable, Immutable, Immutables, Modules } from '@youwol/vsf-core'
 import { BehaviorSubject, from, Observable, Subject } from 'rxjs'
 import { HeadersView } from './common'
 import { installJournalModule, Journal } from '@youwol/logging'
-import * as cdnClient from '@youwol/cdn-client'
+import * as webpmClient from '@youwol/webpm-client'
+import type * as cdnClient from '@youwol/cdn-client'
 import { shareReplay } from 'rxjs/operators'
 /**
  * @category View
@@ -153,9 +154,10 @@ export class TableOfContentView implements VirtualDOM {
  */
 export class JournalPageView implements VirtualDOM {
     static JournalModule$ = () => {
-        return from(installJournalModule(cdnClient)).pipe(
-            shareReplay({ refCount: true, bufferSize: 1 }),
-        )
+        // @youwol/logging needs to be updated to use webpm-client
+        return from(
+            installJournalModule(webpmClient as unknown as typeof cdnClient),
+        ).pipe(shareReplay({ refCount: true, bufferSize: 1 }))
     }
     /**
      * @group Immutable Attributes
