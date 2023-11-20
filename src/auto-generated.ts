@@ -1,21 +1,20 @@
 
 const runTimeDependencies = {
     "externals": {
-        "@youwol/vsf-core": "^0.2.4",
-        "@youwol/vsf-canvas": "^0.2.2",
-        "rxjs": "^6.5.5",
-        "@youwol/logging": "^0.1.1",
-        "@youwol/http-clients": "^2.0.5",
-        "@youwol/http-primitives": "^0.1.2",
-        "@youwol/flux-view": "^1.1.0",
-        "@youwol/fv-tabs": "^0.2.1",
-        "@youwol/os-top-banner": "^0.1.1",
-        "@youwol/fv-code-mirror-editors": "^0.3.1",
-        "@youwol/fv-tree": "^0.2.3",
-        "three": "^0.152.0",
-        "marked": "^4.2.3",
+        "@youwol/vsf-core": "^0.3.0",
+        "@youwol/vsf-canvas": "^0.3.0",
+        "rxjs": "^7.5.6",
+        "@youwol/logging": "^0.2.0",
+        "@youwol/http-clients": "^3.0.0",
+        "@youwol/http-primitives": "^0.2.0",
         "@youwol/rx-vdom": "^1.0.1",
-        "@youwol/webpm-client": "^2.2.0"
+        "@youwol/webpm-client": "^3.0.0",
+        "@youwol/rx-tab-views": "^0.3.0",
+        "@youwol/os-top-banner": "^0.2.0",
+        "@youwol/rx-code-mirror-editors": "^0.4.0",
+        "@youwol/rx-tree-views": "^0.3.0",
+        "three": "^0.152.0",
+        "marked": "^4.2.3"
     },
     "includedInBundle": {
         "d3-dag": "0.8.2",
@@ -23,67 +22,70 @@ const runTimeDependencies = {
     }
 }
 const externals = {
-    "@youwol/vsf-core": "window['@youwol/vsf-core_APIv02']",
-    "@youwol/vsf-canvas": "window['@youwol/vsf-canvas_APIv02']",
-    "rxjs": "window['rxjs_APIv6']",
-    "@youwol/logging": "window['@youwol/logging_APIv01']",
-    "@youwol/http-clients": "window['@youwol/http-clients_APIv2']",
-    "@youwol/http-primitives": "window['@youwol/http-primitives_APIv01']",
-    "@youwol/flux-view": "window['@youwol/flux-view_APIv1']",
-    "@youwol/fv-tabs": "window['@youwol/fv-tabs_APIv02']",
-    "@youwol/os-top-banner": "window['@youwol/os-top-banner_APIv01']",
-    "@youwol/fv-code-mirror-editors": "window['@youwol/fv-code-mirror-editors_APIv03']",
-    "@youwol/fv-tree": "window['@youwol/fv-tree_APIv02']",
+    "@youwol/vsf-core": "window['@youwol/vsf-core_APIv03']",
+    "@youwol/vsf-canvas": "window['@youwol/vsf-canvas_APIv03']",
+    "rxjs": "window['rxjs_APIv7']",
+    "@youwol/logging": "window['@youwol/logging_APIv02']",
+    "@youwol/http-clients": "window['@youwol/http-clients_APIv3']",
+    "@youwol/http-primitives": "window['@youwol/http-primitives_APIv02']",
+    "@youwol/rx-vdom": "window['@youwol/rx-vdom_APIv1']",
+    "@youwol/webpm-client": "window['@youwol/webpm-client_APIv3']",
+    "@youwol/rx-tab-views": "window['@youwol/rx-tab-views_APIv03']",
+    "@youwol/os-top-banner": "window['@youwol/os-top-banner_APIv02']",
+    "@youwol/rx-code-mirror-editors": "window['@youwol/rx-code-mirror-editors_APIv04']",
+    "@youwol/rx-tree-views": "window['@youwol/rx-tree-views_APIv03']",
     "three": "window['THREE_APIv0152']",
     "marked": "window['marked_APIv4']",
-    "@youwol/rx-vdom": "window['@youwol/rx-vdom_APIv1']",
-    "@youwol/webpm-client": "window['@youwol/webpm-client_APIv2']",
-    "rxjs/operators": "window['rxjs_APIv6']['operators']"
+    "rxjs/operators": "window['rxjs_APIv7']['operators']"
 }
 const exportedSymbols = {
     "@youwol/vsf-core": {
-        "apiKey": "02",
+        "apiKey": "03",
         "exportedSymbol": "@youwol/vsf-core"
     },
     "@youwol/vsf-canvas": {
-        "apiKey": "02",
+        "apiKey": "03",
         "exportedSymbol": "@youwol/vsf-canvas"
     },
     "rxjs": {
-        "apiKey": "6",
+        "apiKey": "7",
         "exportedSymbol": "rxjs"
     },
     "@youwol/logging": {
-        "apiKey": "01",
+        "apiKey": "02",
         "exportedSymbol": "@youwol/logging"
     },
     "@youwol/http-clients": {
-        "apiKey": "2",
+        "apiKey": "3",
         "exportedSymbol": "@youwol/http-clients"
     },
     "@youwol/http-primitives": {
-        "apiKey": "01",
+        "apiKey": "02",
         "exportedSymbol": "@youwol/http-primitives"
     },
-    "@youwol/flux-view": {
+    "@youwol/rx-vdom": {
         "apiKey": "1",
-        "exportedSymbol": "@youwol/flux-view"
+        "exportedSymbol": "@youwol/rx-vdom"
     },
-    "@youwol/fv-tabs": {
-        "apiKey": "02",
-        "exportedSymbol": "@youwol/fv-tabs"
+    "@youwol/webpm-client": {
+        "apiKey": "3",
+        "exportedSymbol": "@youwol/webpm-client"
+    },
+    "@youwol/rx-tab-views": {
+        "apiKey": "03",
+        "exportedSymbol": "@youwol/rx-tab-views"
     },
     "@youwol/os-top-banner": {
-        "apiKey": "01",
+        "apiKey": "02",
         "exportedSymbol": "@youwol/os-top-banner"
     },
-    "@youwol/fv-code-mirror-editors": {
-        "apiKey": "03",
-        "exportedSymbol": "@youwol/fv-code-mirror-editors"
+    "@youwol/rx-code-mirror-editors": {
+        "apiKey": "04",
+        "exportedSymbol": "@youwol/rx-code-mirror-editors"
     },
-    "@youwol/fv-tree": {
-        "apiKey": "02",
-        "exportedSymbol": "@youwol/fv-tree"
+    "@youwol/rx-tree-views": {
+        "apiKey": "03",
+        "exportedSymbol": "@youwol/rx-tree-views"
     },
     "three": {
         "apiKey": "0152",
@@ -92,14 +94,6 @@ const exportedSymbols = {
     "marked": {
         "apiKey": "4",
         "exportedSymbol": "marked"
-    },
-    "@youwol/rx-vdom": {
-        "apiKey": "1",
-        "exportedSymbol": "@youwol/rx-vdom"
-    },
-    "@youwol/webpm-client": {
-        "apiKey": "2",
-        "exportedSymbol": "@youwol/webpm-client"
     }
 }
 
@@ -112,15 +106,14 @@ const mainEntry : {entryFile: string,loadDependencies:string[]} = {
         "@youwol/logging",
         "@youwol/http-clients",
         "@youwol/http-primitives",
-        "@youwol/flux-view",
-        "@youwol/fv-tabs",
-        "@youwol/os-top-banner",
-        "@youwol/fv-code-mirror-editors",
-        "@youwol/fv-tree",
-        "three",
-        "marked",
         "@youwol/rx-vdom",
-        "@youwol/webpm-client"
+        "@youwol/webpm-client",
+        "@youwol/rx-tab-views",
+        "@youwol/os-top-banner",
+        "@youwol/rx-code-mirror-editors",
+        "@youwol/rx-tree-views",
+        "three",
+        "marked"
     ]
 }
 
