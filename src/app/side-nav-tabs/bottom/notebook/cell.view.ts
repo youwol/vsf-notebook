@@ -1,12 +1,17 @@
 import { AppState } from '../../../app.state'
-import { attr$, child$, Stream$, VirtualDOM } from '@youwol/flux-view'
+import {
+    VirtualDOM,
+    RxAttribute,
+    ChildrenLike,
+    AnyVirtualDOM,
+} from '@youwol/rx-vdom'
 import { Immutable, Immutables } from '@youwol/vsf-core'
 import { Subject } from 'rxjs'
-import { Common } from '@youwol/fv-code-mirror-editors'
+import { Common } from '@youwol/rx-code-mirror-editors'
 import { NotebookCellTrait } from './notebook.tab'
 import { CellCodeState } from './cell-javascript'
 
-export class CellWrapperView {
+export class CellWrapperView implements VirtualDOM<'div'> {
     /**
      * @group States
      */
@@ -16,16 +21,19 @@ export class CellWrapperView {
      * @group States
      */
     public readonly appState: AppState
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly class: RxAttribute<Immutable<NotebookCellTrait>, string>
 
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class: Stream$<Immutable<NotebookCellTrait>, string>
-
-    /**
-     * @group Immutable DOM Constants
-     */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     public readonly selectedCell$: Subject<Immutable<NotebookCellTrait>>
 
@@ -46,19 +54,19 @@ export class CellWrapperView {
 
     constructor(params: {
         cellState: NotebookCellTrait
-        withActions: VirtualDOM[]
+        withActions: AnyVirtualDOM[]
         selectedCell$: Subject<Immutable<NotebookCellTrait>>
         onExe
         language
         child
     }) {
         Object.assign(this, params)
-        this.class = attr$(
-            this.selectedCell$,
-            (selected): string =>
+        this.class = {
+            source$: this.selectedCell$,
+            vdomMap: (selected): string =>
                 selected === this.cellState ? 'fv-border-focus' : '',
-            { wrapper: (d) => `w-100 p-1 ${d}` },
-        )
+            wrapper: (d) => `w-100 p-1 ${d}`,
+        }
         this.appState = this.cellState.appState
         const ideView = new Common.CodeEditorView({
             ideState: this.cellState.ideState,
@@ -73,15 +81,18 @@ export class CellWrapperView {
             },
         })
         this.children = [
-            child$(this.selectedCell$, (cellState) => {
-                return cellState == this.cellState
-                    ? new ReplTopMenuView({
-                          withActions: params.withActions,
-                          cellState: this.cellState,
-                          appState: this.appState,
-                      })
-                    : { innerHTML: '&#8205; ' }
-            }),
+            {
+                source$: this.selectedCell$,
+                vdomMap: (cellState) => {
+                    return cellState == this.cellState
+                        ? new ReplTopMenuView({
+                              withActions: params.withActions,
+                              cellState: this.cellState,
+                              appState: this.appState,
+                          })
+                        : { innerHTML: '&#8205; ' }
+                },
+            },
             params.child(ideView),
         ]
         this.onclick = (ev) => {
@@ -95,11 +106,15 @@ export class CellWrapperView {
 /**
  * @category View
  */
-export class MoveIconView implements VirtualDOM {
+export class MoveIconView implements VirtualDOM<'div'> {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class: Stream$<Immutables<NotebookCellTrait>, string>
+    public readonly tag = 'div'
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly class: RxAttribute<Immutables<NotebookCellTrait>, string>
     /**
      * @group Immutable DOM Constants
      */
@@ -120,14 +135,12 @@ export class MoveIconView implements VirtualDOM {
             params.direction == 'down'
                 ? 'fa-arrow-alt-circle-down'
                 : 'fa-arrow-alt-circle-up'
-        this.class = attr$(
-            params.appState.cells$,
-            (cells): string => (isOk(cells) ? '' : 'd-none'),
-            {
-                wrapper: (d) =>
-                    `${d} fas ${faClass} fv-hover-text-focus fv-pointer`,
-            },
-        )
+        this.class = {
+            source$: params.appState.cells$,
+            vdomMap: (cells): string => (isOk(cells) ? '' : 'd-none'),
+            wrapper: (d) =>
+                `${d} fas ${faClass} fv-hover-text-focus fv-pointer`,
+        }
         this.onclick = () =>
             params.appState.moveCell(
                 params.cell,
@@ -139,7 +152,12 @@ export class MoveIconView implements VirtualDOM {
 /**
  * @category View
  */
-export class ReplTopMenuView implements VirtualDOM {
+export class ReplTopMenuView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group States
      */
@@ -158,12 +176,12 @@ export class ReplTopMenuView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: {
         cellState: NotebookCellTrait
         appState: AppState
-        withActions: VirtualDOM[]
+        withActions: AnyVirtualDOM[]
     }) {
         Object.assign(this, params)
         const classIcon =
@@ -188,16 +206,15 @@ export class ReplTopMenuView implements VirtualDOM {
                 onchange: (ev) => {
                     this.appState.changeCellMode(
                         this.cellState,
-                        ev.target.value,
+                        ev.target['value'],
                     )
                 },
             },
-            {
-                class: 'mx-2',
-            },
+            { tag: 'div', class: 'mx-2' },
             ...params.withActions,
-            { class: 'flex-grow-1' },
+            { tag: 'div', class: 'flex-grow-1' },
             {
+                tag: 'div',
                 class: 'd-flex align-items-center',
                 children: [
                     new MoveIconView({
@@ -205,7 +222,7 @@ export class ReplTopMenuView implements VirtualDOM {
                         cell: this.cellState,
                         direction: 'up',
                     }),
-                    { class: 'mx-1' },
+                    { tag: 'div', class: 'mx-1' },
                     new MoveIconView({
                         appState: this.appState,
                         cell: this.cellState,
@@ -213,11 +230,13 @@ export class ReplTopMenuView implements VirtualDOM {
                     }),
                 ],
             },
-            { class: 'mx-5' },
+            { tag: 'div', class: 'mx-5' },
             {
+                tag: 'div',
                 class: classIcon,
                 children: [
                     {
+                        tag: 'div',
                         class: 'fas fa-trash fv-text-error fv-hover-text-focus',
                     },
                 ],

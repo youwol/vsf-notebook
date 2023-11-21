@@ -1,7 +1,7 @@
-import { DockableTabs } from '@youwol/fv-tabs'
-import { child$, VirtualDOM } from '@youwol/flux-view'
+import { DockableTabs } from '@youwol/rx-tab-views'
+import { VirtualDOM, ChildrenLike } from '@youwol/rx-vdom'
 import { AppState } from '../../app.state'
-import { ImmutableTree } from '@youwol/fv-tree'
+import { ImmutableTree } from '@youwol/rx-tree-views'
 import { Immutable, Projects, Macros as MacroVsf } from '@youwol/vsf-core'
 import { from, Observable, of } from 'rxjs'
 import { map, mergeMap, take } from 'rxjs/operators'
@@ -17,6 +17,7 @@ export class ProjectTab extends DockableTabs.Tab {
             icon: '',
             content: () => {
                 return {
+                    tag: 'div',
                     style: {
                         width: '300px',
                     },
@@ -30,7 +31,11 @@ export class ProjectTab extends DockableTabs.Tab {
 /**
  * @category View
  */
-export class ProjectView implements VirtualDOM {
+export class ProjectView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group States
      */
@@ -38,19 +43,22 @@ export class ProjectView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { state: AppState }) {
         Object.assign(this, params)
         this.children = [
-            child$(this.state.projectExplorerState$, (state) => {
-                return new ImmutableTree.View({
-                    state,
-                    headerView: (state, node: NodeProjectBase) => {
-                        return new NodeView({ state, node })
-                    },
-                })
-            }),
+            {
+                source$: this.state.projectExplorerState$,
+                vdomMap: (state: ImmutableTree.State<NodeProjectBase>) => {
+                    return new ImmutableTree.View({
+                        state,
+                        headerView: (state, node: NodeProjectBase) => {
+                            return new NodeView({ state, node })
+                        },
+                    })
+                },
+            },
         ]
     }
 }
@@ -510,7 +518,12 @@ export function createProjectRootNode(
 /**
  * @category View
  */
-class NodeView implements VirtualDOM {
+class NodeView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Factories
      */
@@ -544,7 +557,7 @@ class NodeView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: {
         state: ImmutableTree.State<NodeProjectBase>
@@ -552,8 +565,11 @@ class NodeView implements VirtualDOM {
     }) {
         Object.assign(this, params)
         this.children = [
-            { class: `${NodeView.NodeTypeFactory[this.node.category]} mx-1` },
-            { innerText: this.node.name },
+            {
+                tag: 'div',
+                class: `${NodeView.NodeTypeFactory[this.node.category]} mx-1`,
+            },
+            { tag: 'div', innerText: this.node.name },
         ]
     }
 }

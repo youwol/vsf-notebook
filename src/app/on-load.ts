@@ -1,6 +1,6 @@
 import { AppState } from './app.state'
 import { AppView } from './app.view'
-import { render } from '@youwol/flux-view'
+import { render } from '@youwol/rx-vdom'
 import { load$ } from './load'
 import { Client } from '@youwol/webpm-client'
 

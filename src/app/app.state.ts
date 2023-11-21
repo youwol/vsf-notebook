@@ -1,4 +1,4 @@
-import { DockableTabs } from '@youwol/fv-tabs'
+import { DockableTabs } from '@youwol/rx-tab-views'
 import {
     BehaviorSubject,
     combineLatest,
@@ -32,7 +32,7 @@ import {
     createEnvLibRootNode,
 } from './side-nav-tabs'
 
-import { ImmutableTree } from '@youwol/fv-tree'
+import { ImmutableTree } from '@youwol/rx-tree-views'
 import {
     debounceTime,
     distinctUntilChanged,

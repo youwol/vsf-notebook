@@ -7,10 +7,10 @@ import {
     Subject,
 } from 'rxjs'
 import { Configurations, Immutable, Projects } from '@youwol/vsf-core'
-import { attr$, childrenFromStore$, VirtualDOM } from '@youwol/flux-view'
+import { AnyVirtualDOM, ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { CellWrapperView } from './cell.view'
 import { NotebookCellTrait } from './notebook.tab'
-import { Common } from '@youwol/fv-code-mirror-editors'
+import { Common } from '@youwol/rx-code-mirror-editors'
 import { map, scan, skip } from 'rxjs/operators'
 
 export function cellCodeView(
@@ -19,22 +19,27 @@ export function cellCodeView(
     selectedCell$: Subject<Immutable<NotebookCellTrait>>,
 ) {
     const child = (ideView) => ({
-        style: attr$(state.projectByCells$, (hist) => {
-            return hist.has(cellState)
-                ? {
-                      opacity: 1,
-                      borderWidth: '5px',
-                  }
-                : {
-                      opacity: 0.5,
-                  }
-        }),
-        class: attr$(
-            cellState.isLastCell$,
-            (isLast): string =>
+        style: {
+            source$: state.projectByCells$,
+            vdomMap: (
+                hist: Immutable<Map<NotebookCellTrait, Projects.ProjectState>>,
+            ) => {
+                return hist.has(cellState)
+                    ? {
+                          opacity: 1,
+                          borderWidth: '5px',
+                      }
+                    : {
+                          opacity: 0.5,
+                      }
+            },
+        },
+        class: {
+            source: cellState.isLastCell$,
+            vdomMap: (isLast: boolean): string =>
                 isLast ? 'fv-border-left-success border-3' : 'w-100 h-100',
-            { wrapper: (d) => `${d} w-100 h-100` },
-        ),
+            wrapper: (d: string) => `${d} w-100 h-100`,
+        },
         children: [
             ideView,
             new ReplOutput({
@@ -83,12 +88,12 @@ export class CellCodeState implements NotebookCellTrait {
     /**
      * @group Observables
      */
-    public readonly output$ = new ReplaySubject<VirtualDOM | 'clear'>()
+    public readonly output$ = new ReplaySubject<AnyVirtualDOM | 'clear'>()
 
     /**
      * @group Observables
      */
-    public readonly outputs$ = new Observable<VirtualDOM[]>()
+    public readonly outputs$ = new Observable<AnyVirtualDOM[]>()
 
     constructor(params: { appState: AppState; content: string }) {
         Object.assign(this, params)
@@ -139,7 +144,11 @@ export class CellCodeState implements NotebookCellTrait {
 /**
  * @category View
  */
-export class ReplOutput {
+export class ReplOutput implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group States
      */
@@ -151,7 +160,7 @@ export class ReplOutput {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { cellState: CellCodeState }) {
         Object.assign(this, params)
@@ -162,33 +171,34 @@ export class ReplOutput {
                 style: {
                     marginBottom: '0px',
                 },
-                children: childrenFromStore$(
-                    this.cellState.outputs$.pipe(map((vDom) => vDom)),
-                    (vDom) => vDom,
-                ),
+                children: {
+                    policy: 'sync',
+                    source$: this.cellState.outputs$.pipe(map((vDom) => vDom)),
+                    vdomMap: (vDom: AnyVirtualDOM) => vDom,
+                },
             },
         ]
     }
 }
 
-export class RunCodeActionView {
+export class RunCodeActionView implements VirtualDOM<'div'> {
+    public readonly tag = 'div'
     public readonly class = 'fv-hover-bg-secondary'
-    public readonly children: VirtualDOM[]
-    public readonly onclick
+    public readonly children: ChildrenLike
+    public readonly onclick: () => void
     constructor(params: { onExe }) {
         const isRunning$ = new BehaviorSubject(false)
         this.children = [
             {
-                class: attr$(
-                    isRunning$,
-                    (isRunning): string =>
+                tag: 'div',
+                class: {
+                    source$: isRunning$,
+                    vdomMap: (isRunning): string =>
                         isRunning
                             ? 'fa-spinner fa-spin'
                             : 'fa-play fv-pointer fv-text-success',
-                    {
-                        wrapper: (d) => `${d} fas rounded p-1`,
-                    },
-                ),
+                    wrapper: (d) => `${d} fas rounded p-1`,
+                },
             },
         ]
         this.onclick = () => {

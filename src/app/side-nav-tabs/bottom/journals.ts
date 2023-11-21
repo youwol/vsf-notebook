@@ -1,19 +1,12 @@
-import { DockableTabs } from '@youwol/fv-tabs'
+import { DockableTabs } from '@youwol/rx-tab-views'
 import { AppState } from '../../app.state'
-import {
-    attr$,
-    childrenFromStore$,
-    VirtualDOM,
-    FromStoreChildrenStream$,
-    child$,
-} from '@youwol/flux-view'
+import { RxChildren, VirtualDOM, ChildrenLike } from '@youwol/rx-vdom'
 
-import { asMutable, Immutable, Immutables, Modules } from '@youwol/vsf-core'
+import { asMutable, Immutable, Modules } from '@youwol/vsf-core'
 import { BehaviorSubject, from, Observable, Subject } from 'rxjs'
 import { HeadersView } from './common'
-import { installJournalModule, Journal } from '@youwol/logging'
+import { installJournalModule, Journal, JournalModule } from '@youwol/logging'
 import * as webpmClient from '@youwol/webpm-client'
-import type * as cdnClient from '@youwol/cdn-client'
 import { shareReplay } from 'rxjs/operators'
 /**
  * @category View
@@ -33,6 +26,7 @@ export class JournalsTab extends DockableTabs.Tab {
                     selected$.next(m.slice(-1)[0])
                 })
                 return {
+                    tag: 'div' as const,
                     class: 'w-100 p-2 overflow-auto mx-auto d-flex flex-column',
                     style: {
                         height: '50vh',
@@ -55,7 +49,11 @@ export class JournalsTab extends DockableTabs.Tab {
 /**
  * @category View
  */
-export class ContentView implements VirtualDOM {
+export class ContentView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -68,7 +66,7 @@ export class ContentView implements VirtualDOM {
     /**
      * @group Observables
      */
-    public readonly children: FromStoreChildrenStream$<Modules.ImplementationTrait>
+    public readonly children: RxChildren<'sync', Modules.ImplementationTrait>
 
     constructor({
         state,
@@ -81,26 +79,38 @@ export class ContentView implements VirtualDOM {
             state.selectedModulesJournal$,
         )
         const selectedPage$ = new Subject<Journal.Page>()
-        this.children = childrenFromStore$(buffer$, (module) => {
-            return {
-                class: attr$(selected$, (selected) =>
-                    selected && selected.uid == module.uid
-                        ? 'h-100 d-flex '
-                        : 'd-none',
-                ),
-                children: [
-                    new TableOfContentView({ selectedPage$, module }),
-                    child$(
-                        selectedPage$,
-                        (page) => new JournalPageView({ page }),
-                    ),
-                ],
-            }
-        })
+        this.children = {
+            policy: 'sync',
+            source$: buffer$,
+            vdomMap: (module) => {
+                return {
+                    tag: 'div' as const,
+                    class: {
+                        source$: selected$,
+                        vdomMap: (selected: Modules.ImplementationTrait) =>
+                            selected && selected.uid == module.uid
+                                ? 'h-100 d-flex '
+                                : 'd-none',
+                    },
+                    children: [
+                        new TableOfContentView({ selectedPage$, module }),
+                        {
+                            source$: selectedPage$,
+                            vdomMap: (page: Journal.Page) =>
+                                new JournalPageView({ page }),
+                        },
+                    ],
+                }
+            },
+        }
     }
 }
 
-export class TableOfContentView implements VirtualDOM {
+export class TableOfContentView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -109,7 +119,7 @@ export class TableOfContentView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor({
         module,
@@ -125,18 +135,23 @@ export class TableOfContentView implements VirtualDOM {
                 style: { whiteSpace: 'nowrap' },
             },
             {
+                tag: 'div',
                 class: 'ml-2',
                 children: module.journal.pages.map((page) => {
                     return {
+                        tag: 'div',
                         class: 'fv-pointer d-flex align-items-center',
                         children: [
                             {
+                                tag: 'div',
                                 class: 'fas fa-file-alt',
                             },
                             {
+                                tag: 'div',
                                 class: 'mx-1',
                             },
                             {
+                                tag: 'div',
                                 innerText: page.title,
                             },
                         ],
@@ -152,12 +167,17 @@ export class TableOfContentView implements VirtualDOM {
 /**
  * @category View
  */
-export class JournalPageView implements VirtualDOM {
+export class JournalPageView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     static JournalModule$ = () => {
         // @youwol/logging needs to be updated to use webpm-client
-        return from(
-            installJournalModule(webpmClient as unknown as typeof cdnClient),
-        ).pipe(shareReplay({ refCount: true, bufferSize: 1 }))
+        return from(installJournalModule(webpmClient)).pipe(
+            shareReplay({ refCount: true, bufferSize: 1 }),
+        )
     }
     /**
      * @group Immutable Attributes
@@ -172,7 +192,7 @@ export class JournalPageView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: Immutables<VirtualDOM>
+    public readonly children: ChildrenLike
 
     constructor(params: { page: Immutable<Journal.Page> }) {
         Object.assign(this, params)
@@ -182,25 +202,29 @@ export class JournalPageView implements VirtualDOM {
                 class: 'text-center',
                 innerText: this.page.title,
             },
-            child$(JournalPageView.JournalModule$(), (journalModule) => {
-                return {
-                    class: 'w-100 flex-grow-1',
-                    style: { minHeight: '0px' },
-                    children: [
-                        new journalModule.ContextView({
-                            state: new journalModule.ContextState({
-                                context: asMutable(this.page.entryPoint),
-                                expandedNodes: [this.page.entryPoint.id],
+            {
+                source$: JournalPageView.JournalModule$(),
+                vdomMap: (journalModule: JournalModule) => {
+                    return {
+                        tag: 'div',
+                        class: 'w-100 flex-grow-1',
+                        style: { minHeight: '0px' },
+                        children: [
+                            new journalModule.ContextView({
+                                state: new journalModule.ContextState({
+                                    context: asMutable(this.page.entryPoint),
+                                    expandedNodes: [this.page.entryPoint.id],
+                                }),
+                                dataViewsFactory: [],
+                                options: {
+                                    containerClass:
+                                        'p-4 flex-grow-1 overflow-auto w-100',
+                                },
                             }),
-                            dataViewsFactory: [],
-                            options: {
-                                containerClass:
-                                    'p-4 flex-grow-1 overflow-auto w-100',
-                            },
-                        }),
-                    ],
-                }
-            }),
+                        ],
+                    }
+                },
+            },
         ]
     }
 }

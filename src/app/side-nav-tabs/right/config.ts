@@ -1,9 +1,9 @@
-import { DockableTabs } from '@youwol/fv-tabs'
+import { DockableTabs } from '@youwol/rx-tab-views'
 import { AppState } from '../../app.state'
 
-import { Configurations, Immutable, Immutables } from '@youwol/vsf-core'
-import { child$, VirtualDOM } from '@youwol/flux-view'
-import { ObjectJs } from '@youwol/fv-tree'
+import { Configurations, Immutable, Modules } from '@youwol/vsf-core'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
+import { ObjectJs } from '@youwol/rx-tree-views'
 /**
  * @category View
  */
@@ -15,23 +15,31 @@ export class ConfigTab extends DockableTabs.Tab {
             icon: 'fas fa-cog',
             content: () => {
                 return {
+                    tag: 'div',
                     class: 'h-100 p-2 overflow-auto',
                     style: {
                         width: '300px',
                     },
                     children: [
-                        child$(state.selectedConfigurable$, (module) => ({
-                            tag: 'h3',
-                            class: 'fv-bg-background-alt text-center',
-                            innerText: module.uid,
-                        })),
-                        child$(
-                            state.selectedConfigurable$,
-                            (configurable) =>
+                        {
+                            source$: state.selectedConfigurable$,
+                            vdomMap: (
+                                module: Immutable<Modules.ImplementationTrait>,
+                            ) => ({
+                                tag: 'h3',
+                                class: 'fv-bg-background-alt text-center',
+                                innerText: module.uid,
+                            }),
+                        },
+                        {
+                            source$: state.selectedConfigurable$,
+                            vdomMap: (
+                                configurable: Immutable<Modules.ImplementationTrait>,
+                            ) =>
                                 new ConfigurationView({
                                     configurable,
                                 }),
-                        ),
+                        },
                     ],
                 }
             },
@@ -41,7 +49,11 @@ export class ConfigTab extends DockableTabs.Tab {
 /**
  * @category View
  */
-export class ConfigurationView implements VirtualDOM {
+export class ConfigurationView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -51,7 +63,7 @@ export class ConfigurationView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: Immutables<VirtualDOM>
+    public readonly children: ChildrenLike
 
     constructor({
         configurable,

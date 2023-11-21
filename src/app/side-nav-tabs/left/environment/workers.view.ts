@@ -1,7 +1,7 @@
-import { ImmutableTree } from '@youwol/fv-tree'
+import { ImmutableTree } from '@youwol/rx-tree-views'
 
 import { Immutable, Projects, Immutables } from '@youwol/vsf-core'
-import { attr$, children$, Stream$, VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, RxAttribute, VirtualDOM } from '@youwol/rx-vdom'
 import { WorkersPoolTypes } from '@youwol/webpm-client'
 import { map, mergeMap, tap } from 'rxjs/operators'
 import { merge, Observable, of } from 'rxjs'
@@ -184,7 +184,7 @@ export function createWorkersRootNode(
 /**
  * @category View
  */
-export class WorkersNodeView implements VirtualDOM {
+export class WorkersNodeView implements VirtualDOM<'div'> {
     /**
      * @group Factories
      */
@@ -200,6 +200,10 @@ export class WorkersNodeView implements VirtualDOM {
      * @group Immutable Constants
      */
     public readonly node: NodeWorkersBase
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
 
     /**
      * @group Immutable DOM Constants
@@ -210,7 +214,7 @@ export class WorkersNodeView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: {
         state: ImmutableTree.State<NodeWorkersBase>
@@ -220,21 +224,26 @@ export class WorkersNodeView implements VirtualDOM {
 
         this.children = [
             {
+                tag: 'div',
                 class: `${
                     WorkersNodeView.NodeTypeFactory[this.node.category]
                 } mx-1`,
             },
-            { innerText: this.node.name },
+            { tag: 'div', innerText: this.node.name },
             this.node instanceof PoolNode
                 ? new PoolInstancesView(this.node)
                 : this.node instanceof WorkerNode
                   ? new WorkerSuffixView({ node: this.node })
-                  : {},
+                  : { tag: 'div' },
         ]
     }
 }
 
-class StatusView implements VirtualDOM {
+class StatusView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -244,23 +253,25 @@ class StatusView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class: Stream$<Immutables<string>, string>
+    public readonly class: RxAttribute<Immutables<string>, string>
 
     constructor(params: {
         workerId: string
         busyWorkers$: Observable<Immutables<string>>
     }) {
-        this.class = attr$(
-            params.busyWorkers$,
-            (busies): string =>
+        this.class = {
+            source$: params.busyWorkers$,
+            vdomMap: (busies): string =>
                 busies.includes(params.workerId) ? 'fa-play' : 'fa-circle ',
-            {
-                wrapper: (d) => `${d} fas p-1 rounded fv-text-success`,
-            },
-        )
+            wrapper: (d) => `${d} fas p-1 rounded fv-text-success`,
+        }
     }
 }
-class PoolInstancesView implements VirtualDOM {
+class PoolInstancesView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -269,35 +280,44 @@ class PoolInstancesView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children
+    public readonly children: ChildrenLike
 
     constructor(node: PoolNode) {
-        this.children = children$(node.instance.workers$, (workers) => {
-            const workerIds = Object.keys(workers)
-            return [
-                ...workerIds.map(
-                    (workerId) =>
-                        new StatusView({
-                            workerId,
-                            busyWorkers$: node.instance.busyWorkers$,
-                        }),
-                ),
-                ...Array.from(
-                    Array(node.instance.pool.stretchTo - workerIds.length),
-                ).map(() => {
-                    return {
-                        style: {
-                            transform: 'scale(0.7)',
-                        },
-                        class: 'fas fa-circle-notch  mx-1',
-                    }
-                }),
-            ]
-        })
+        this.children = {
+            policy: 'replace',
+            source$: node.instance.workers$,
+            vdomMap: (workers) => {
+                const workerIds = Object.keys(workers)
+                return [
+                    ...workerIds.map(
+                        (workerId) =>
+                            new StatusView({
+                                workerId,
+                                busyWorkers$: node.instance.busyWorkers$,
+                            }),
+                    ),
+                    ...Array.from(
+                        Array(node.instance.pool.stretchTo - workerIds.length),
+                    ).map(() => {
+                        return {
+                            tag: 'div' as const,
+                            style: {
+                                transform: 'scale(0.7)',
+                            },
+                            class: 'fas fa-circle-notch  mx-1',
+                        }
+                    }),
+                ]
+            },
+        }
     }
 }
 
-class WorkerSuffixView implements VirtualDOM {
+class WorkerSuffixView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable Constants
      */
@@ -309,7 +329,7 @@ class WorkerSuffixView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { node: WorkerNode }) {
         Object.assign(this, params)
@@ -319,12 +339,16 @@ class WorkerSuffixView implements VirtualDOM {
                 busyWorkers$: this.node.instance.busyWorkers$,
             }),
             {
-                innerText: attr$(this.node.instance.runningTasks$, (tasks) => {
-                    const task = tasks.find(
-                        ({ workerId }) => workerId == this.node.id,
-                    )
-                    return task ? task.title : ''
-                }),
+                tag: 'div',
+                innerText: {
+                    source$: this.node.instance.runningTasks$,
+                    vdomMap: (tasks: { workerId: string; title: string }[]) => {
+                        const task = tasks.find(
+                            ({ workerId }) => workerId == this.node.id,
+                        )
+                        return task ? task.title : ''
+                    },
+                },
             },
         ]
     }

@@ -1,8 +1,6 @@
 import { installJournalModule, Journal } from '@youwol/logging'
-import { ObjectJs } from '@youwol/fv-tree'
-import { VirtualDOM } from '@youwol/flux-view'
+import { ObjectJs } from '@youwol/rx-tree-views'
 import * as webpmClient from '@youwol/webpm-client'
-import type * as cdnClient from '@youwol/cdn-client'
 import { ToolBox, ExecutionJournal, DocumentationTrait } from '@youwol/vsf-core'
 
 export const viewsFactory: Journal.DataViewsFactory = [
@@ -15,7 +13,7 @@ export const viewsFactory: Journal.DataViewsFactory = [
                 title: ' ',
                 data,
             })
-            return new ObjectJs.View({ state }) as VirtualDOM
+            return new ObjectJs.View({ state })
         },
     },
     {
@@ -24,9 +22,7 @@ export const viewsFactory: Journal.DataViewsFactory = [
         isCompatible: (d) => d instanceof ExecutionJournal,
         view: (data: ExecutionJournal) => {
             // @youwol/logging needs to be updated to use webpm-client
-            return installJournalModule(
-                webpmClient as unknown as typeof cdnClient,
-            ).then((module) => {
+            return installJournalModule(webpmClient).then((module) => {
                 const state = new module.JournalState({
                     journal: {
                         title: "Module's Journal",

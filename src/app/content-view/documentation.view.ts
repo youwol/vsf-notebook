@@ -1,11 +1,15 @@
-import { VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { Immutable } from '@youwol/vsf-core'
 import * as Tb from '../side-nav-tabs/left/environment/toolboxes.view'
 
 /**
  * @category View
  */
-export class DocumentationTab implements VirtualDOM {
+export class DocumentationTab implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Properties
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable Properties
      */
@@ -17,7 +21,7 @@ export class DocumentationTab implements VirtualDOM {
     /**
      * @group Immutable DOM Properties
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { node: Immutable<Tb.ModuleNode | Tb.ToolboxNode> }) {
         Object.assign(this, params)
@@ -29,6 +33,7 @@ export class DocumentationTab implements VirtualDOM {
                       src: this.node.documentation,
                   }
                 : {
+                      tag: 'div',
                       class: 'p-2 w-100 text-center',
                       innerText: 'No documentation URL has been exposed.',
                   },
