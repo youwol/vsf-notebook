@@ -1,6 +1,6 @@
 {
     "name": "@youwol/vsf-notebook",
-    "description": "",
+    "description": "Notebook like application to create Visual Studio Flow projects.",
     "version": "0.1.3-wip",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/vsf-notebook#README.md",

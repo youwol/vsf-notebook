@@ -127,7 +127,7 @@ export const setup = {
     name:'@youwol/vsf-notebook',
         assetId:'QHlvdXdvbC92c2Ytbm90ZWJvb2s=',
     version:'0.1.3-wip',
-    shortDescription:"",
+    shortDescription:"Notebook like application to create Visual Studio Flow projects.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/vsf-notebook&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/vsf-notebook',
     sourceGithub:'https://github.com/youwol/vsf-notebook',
