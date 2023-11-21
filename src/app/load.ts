@@ -1,4 +1,4 @@
-import { LoadingScreenView, CdnMessageEvent } from '@youwol/cdn-client'
+import { LoadingScreenView, CdnMessageEvent } from '@youwol/webpm-client'
 import { forkJoin, Observable } from 'rxjs'
 import { AssetsGateway, AssetsBackend } from '@youwol/http-clients'
 import { raiseHTTPErrors } from '@youwol/http-primitives'

@@ -1,9 +1,9 @@
-import { DockableTabs } from '@youwol/fv-tabs'
-import { Common } from '@youwol/fv-code-mirror-editors'
-import { child$, childrenFromStore$, VirtualDOM } from '@youwol/flux-view'
+import { DockableTabs } from '@youwol/rx-tab-views'
+import { Common } from '@youwol/rx-code-mirror-editors'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { AppState } from '../../../app.state'
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs'
-import { Projects, Immutable, asMutable } from '@youwol/vsf-core'
+import { Projects, Immutable, asMutable, Immutables } from '@youwol/vsf-core'
 import {
     CellMarkdownState,
     cellMarkdownView,
@@ -15,9 +15,10 @@ import {
     RunCodeActionView,
 } from './cell-javascript'
 
-export class CellsSeparatorView {
+export class CellsSeparatorView implements VirtualDOM<'div'> {
+    public readonly tag = 'div'
     public readonly class = 'd-flex w-100 align-items-center'
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
     constructor(params: {
         state: AppState
         refCell: Immutable<NotebookCellTrait>
@@ -25,12 +26,14 @@ export class CellsSeparatorView {
     }) {
         this.children = [
             {
+                tag: 'div',
                 class: 'fv-text-primary fas fa-plus-square fv-pointer fv-hover-text-focus',
                 onclick: () => {
                     params.state.newCell(params.refCell, params.position)
                 },
             },
             {
+                tag: 'div',
                 class: 'flex-grow-1 border mx-2',
                 style: {
                     height: '0px',
@@ -40,12 +43,14 @@ export class CellsSeparatorView {
     }
 }
 
-export class ScrollerActionsView {
+export class ScrollerActionsView implements VirtualDOM<'div'> {
+    public readonly tag = 'div'
     public readonly class = 'd-flex'
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
     constructor(params: { element: HTMLElement }) {
         this.children = [
             {
+                tag: 'div',
                 class: 'fas fa-angle-double-up fv-pointer fv-hover-text-focus',
                 onclick: () => {
                     params.element.scroll({
@@ -54,8 +59,12 @@ export class ScrollerActionsView {
                     })
                 },
             },
-            { class: 'mx-1' },
             {
+                tag: 'div',
+                class: 'mx-1',
+            },
+            {
+                tag: 'div',
                 class: 'fas fa-angle-double-down fv-pointer fv-hover-text-focus',
                 onclick: () => {
                     params.element.scroll({
@@ -64,7 +73,10 @@ export class ScrollerActionsView {
                     })
                 },
             },
-            { class: 'mx-1' },
+            {
+                tag: 'div',
+                class: 'mx-1',
+            },
         ]
     }
 }
@@ -85,6 +97,7 @@ export class NotebookTab extends DockableTabs.Tab {
             icon: 'fas fa-code',
             content: () => {
                 return {
+                    tag: 'div',
                     class: 'w-100 mx-auto d-flex flex-column',
                     style: {
                         height: '50vh',
@@ -92,31 +105,36 @@ export class NotebookTab extends DockableTabs.Tab {
                     onclick: () => this.selectedCell$.next(undefined),
                     children: [
                         {
+                            tag: 'div',
                             class: 'w-100 d-flex justify-content-center py-1 border-bottom align-items-center',
                             children: [
                                 {
+                                    tag: 'div',
                                     class: 'flex-grow-1',
                                 },
                                 new RunCodeActionView({
                                     onExe: () => state.execute(),
                                 }),
                                 {
+                                    tag: 'div',
                                     class: 'flex-grow-1',
                                 },
-                                child$(
-                                    scrollableElement$,
-                                    (element) =>
+                                {
+                                    source$: scrollableElement$,
+                                    vdomMap: (element: HTMLElement) =>
                                         new ScrollerActionsView({ element }),
-                                ),
+                                },
                             ],
                         },
                         {
+                            tag: 'div',
                             class: 'd-flex flex-grow-1 w-100',
                             style: {
                                 minHeight: '0px',
                             },
                             children: [
                                 {
+                                    tag: 'div',
                                     class: 'w-25 h-100',
                                     children: [
                                         new TableOfContentView({
@@ -126,6 +144,7 @@ export class NotebookTab extends DockableTabs.Tab {
                                     ],
                                 },
                                 {
+                                    tag: 'div',
                                     class: 'h-100 flex-grow-1 overflow-auto',
                                     connectedCallback: (d: HTMLElement) => {
                                         d.scroll({ top: 0 })
@@ -133,20 +152,23 @@ export class NotebookTab extends DockableTabs.Tab {
                                     },
                                     children: [
                                         {
+                                            tag: 'div',
                                             style: {
                                                 minHeight: '0px',
                                                 maxWidth: '800px',
                                                 textAlign: 'justify',
                                             },
                                             class: 'h-100 w-75 px-4 d-flex flex-column mx-auto',
-
-                                            children: childrenFromStore$(
-                                                asMutable<
+                                            children: {
+                                                policy: 'sync' as const,
+                                                source$: asMutable<
                                                     Observable<
                                                         NotebookCellTrait[]
                                                     >
                                                 >(state.cells$),
-                                                (cellState) => {
+                                                vdomMap: (
+                                                    cellState: NotebookCellTrait,
+                                                ) => {
                                                     const preCellView =
                                                         new CellsSeparatorView({
                                                             state,
@@ -159,9 +181,11 @@ export class NotebookTab extends DockableTabs.Tab {
                                                             refCell: cellState,
                                                             position: 'after',
                                                         })
-                                                    const postCellView = child$(
-                                                        state.cells$,
-                                                        (cells) => {
+                                                    const postCellView = {
+                                                        source$: state.cells$,
+                                                        vdomMap: (
+                                                            cells: Immutables<NotebookCellTrait>,
+                                                        ) => {
                                                             const lastCell =
                                                                 cells.slice(
                                                                     -1,
@@ -169,9 +193,11 @@ export class NotebookTab extends DockableTabs.Tab {
                                                             return lastCell ==
                                                                 cellState
                                                                 ? maybePostCellView
-                                                                : {}
+                                                                : {
+                                                                      tag: 'div' as const,
+                                                                  }
                                                         },
-                                                    )
+                                                    }
                                                     const content =
                                                         cellState.mode == 'code'
                                                             ? cellCodeView(
@@ -188,6 +214,7 @@ export class NotebookTab extends DockableTabs.Tab {
                                                                   markdownUpdate$,
                                                               )
                                                     return {
+                                                        tag: 'div',
                                                         children: [
                                                             preCellView,
                                                             content,
@@ -195,16 +222,17 @@ export class NotebookTab extends DockableTabs.Tab {
                                                         ],
                                                     }
                                                 },
-                                                {
-                                                    orderOperator: (a, b) =>
-                                                        state.cells$.value.indexOf(
-                                                            a,
-                                                        ) -
-                                                        state.cells$.value.indexOf(
-                                                            b,
-                                                        ),
-                                                },
-                                            ),
+                                                orderOperator: (
+                                                    a: Immutable<NotebookCellTrait>,
+                                                    b: Immutable<NotebookCellTrait>,
+                                                ) =>
+                                                    state.cells$.value.indexOf(
+                                                        a,
+                                                    ) -
+                                                    state.cells$.value.indexOf(
+                                                        b,
+                                                    ),
+                                            },
                                         },
                                     ],
                                 },

@@ -6,16 +6,16 @@
     display: none;
 }
 
-.md-reader pre{
+.md-reader pre {
     background-color: white;
-    padding: 5px
+    padding: 5px;
 }
 
-.fv-tree-header{
-    margin-top: 5px
+.fv-tree-header {
+    margin-top: 5px;
 }
 
-blockquote{
+blockquote {
     border-left: solid aliceblue;
     padding-left: 20px;
 }

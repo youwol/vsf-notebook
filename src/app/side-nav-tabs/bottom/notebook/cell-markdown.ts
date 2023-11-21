@@ -1,7 +1,7 @@
 import { AppState } from '../../../app.state'
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs'
 import { Immutable, Projects } from '@youwol/vsf-core'
-import { Common } from '@youwol/fv-code-mirror-editors'
+import { Common } from '@youwol/rx-code-mirror-editors'
 import {
     debounceTime,
     delay,
@@ -10,7 +10,7 @@ import {
     take,
     withLatestFrom,
 } from 'rxjs/operators'
-import { attr$, child$, VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { CellWrapperView } from './cell.view'
 import { NotebookCellTrait } from './notebook.tab'
 
@@ -60,21 +60,27 @@ export function cellMarkdownView(
             )
             .subscribe((editor) => editor.refresh())
         const editMdView = {
-            class: attr$(editionMode$, (mode) =>
-                mode == 'view' ? 'd-none' : '',
-            ),
+            tag: 'div',
+            class: {
+                source$: editionMode$,
+                vdomMap: (mode: 'view' | 'edit') =>
+                    mode == 'view' ? 'd-none' : '',
+            },
             children: [ideView],
         }
         const readMdView = {
-            class: attr$(editionMode$, (mode) =>
-                mode == 'edit' ? 'd-none' : 'md-reader',
-            ),
-            innerHTML: attr$(
-                editionMode$.pipe(
+            tag: 'div',
+            class: {
+                source$: editionMode$,
+                vdomMap: (mode: 'view' | 'edit') =>
+                    mode == 'edit' ? 'd-none' : 'md-reader',
+            },
+            innerHTML: {
+                source$: editionMode$.pipe(
                     filter((mode) => mode === 'view'),
                     withLatestFrom(cellState.ideState.updates$['./repl']),
                 ),
-                ([_, file]) => {
+                vdomMap: ([_, file]) => {
                     const srcInstrumented = instrumentMardownSource(
                         file.content,
                     )
@@ -82,12 +88,13 @@ export function cellMarkdownView(
                     setTimeout(() => mdExecuted$.next(true), 0)
                     return content
                 },
-            ),
+            },
             ondblclick: () => {
                 editionMode$.next('edit')
             },
         }
         return {
+            tag: 'div',
             children: [editMdView, readMdView],
         }
     }
@@ -144,24 +151,24 @@ export class CellMarkdownState implements NotebookCellTrait {
     }
 }
 
-export class MarkdownActionView {
+export class MarkdownActionView implements VirtualDOM<'div'> {
+    public readonly tag = 'div'
     public readonly class = 'fv-hover-text-focus'
-    public readonly children: VirtualDOM[]
-    public readonly onclick
+    public readonly children: ChildrenLike
+    public readonly onclick: () => void
     constructor(params: {
         onExe
         editionMode$: BehaviorSubject<'view' | 'edit'>
     }) {
         this.children = [
             {
-                class: attr$(
-                    params.editionMode$,
-                    (mode): string => (mode == 'view' ? 'fa-pen' : 'fa-eye'),
-                    {
-                        wrapper: (d) =>
-                            `${d} fv-text-success fas fv-pointer p-1`,
-                    },
-                ),
+                tag: 'div',
+                class: {
+                    source$: params.editionMode$,
+                    vdomMap: (mode): string =>
+                        mode == 'view' ? 'fa-pen' : 'fa-eye',
+                    wrapper: (d) => `${d} fv-text-success fas fv-pointer p-1`,
+                },
             },
         ]
         this.onclick = () => {
@@ -173,7 +180,12 @@ export class MarkdownActionView {
 /**
  * @category View
  */
-export class TableOfContentView implements VirtualDOM {
+export class TableOfContentView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constant
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable Constant
      */
@@ -189,7 +201,7 @@ export class TableOfContentView implements VirtualDOM {
     /**
      * @group Immutable DOM Constant
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: {
         markdownUpdate$: Observable<boolean>
@@ -203,12 +215,12 @@ export class TableOfContentView implements VirtualDOM {
                 class: 'w-100 text-center',
                 innerText: 'Table of content',
             },
-            child$(
-                combineLatest([
+            {
+                source$: combineLatest([
                     this.markdownUpdate$.pipe(debounceTime(100)),
                     this.scrollableElement$,
                 ]),
-                ([_, scroller]) => {
+                vdomMap: ([_, scroller]) => {
                     const maxHeight = scroller.getBoundingClientRect().height
                     scroller.onscroll = () => {
                         const a = retrieveSections()
@@ -227,23 +239,23 @@ export class TableOfContentView implements VirtualDOM {
                         highlighted$.next(element)
                     }
                     return {
+                        tag: 'div',
                         connectedCallback: () => {
                             // The next line force 'highlighting' the current section
                             scroller.onscroll(undefined)
                         },
                         children: retrieveSections().map((e: HTMLElement) => {
                             return {
-                                class: attr$(
-                                    highlighted$,
-                                    (highlighted): string =>
+                                tag: 'div',
+                                class: {
+                                    source$: highlighted$,
+                                    vdomMap: (highlighted): string =>
                                         highlighted === e
                                             ? 'fv-text-secondary fv-xx-lighter'
                                             : '',
-                                    {
-                                        wrapper: (d) =>
-                                            `${d} fv-pointer fv-hover-text-focus`,
-                                    },
-                                ),
+                                    wrapper: (d) =>
+                                        `${d} fv-pointer fv-hover-text-focus`,
+                                },
                                 style: {
                                     paddingLeft: `${
                                         15 * parseInt(e.dataset.level)
@@ -267,13 +279,12 @@ export class TableOfContentView implements VirtualDOM {
                         }),
                     }
                 },
-                {
-                    untilFirst: {
-                        class: 'w-100 d-flex justify-content-center',
-                        children: [{ class: 'fas fa-spinner fa-spin' }],
-                    },
+                untilFirst: {
+                    tag: 'div',
+                    class: 'w-100 d-flex justify-content-center',
+                    children: [{ tag: 'div', class: 'fas fa-spinner fa-spin' }],
                 },
-            ),
+            },
         ]
     }
 }

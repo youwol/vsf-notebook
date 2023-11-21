@@ -1,6 +1,6 @@
-import { ImmutableTree } from '@youwol/fv-tree'
+import { ImmutableTree } from '@youwol/rx-tree-views'
 import { Immutable, Projects } from '@youwol/vsf-core'
-import { VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 
 type NodeToolboxesCategory = 'Node' | 'Libraries' | 'Library'
 
@@ -93,7 +93,7 @@ export function createEnvLibRootNode(
 /**
  * @category View
  */
-export class LibNodeView implements VirtualDOM {
+export class LibNodeView implements VirtualDOM<'div'> {
     /**
      * @group Factories
      */
@@ -107,6 +107,10 @@ export class LibNodeView implements VirtualDOM {
      * @group Immutable Constants
      */
     public readonly node: NodeLibrariesBase
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
 
     /**
      * @group Immutable DOM Constants
@@ -117,7 +121,7 @@ export class LibNodeView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: {
         state: ImmutableTree.State<NodeLibrariesBase>
@@ -126,11 +130,12 @@ export class LibNodeView implements VirtualDOM {
         Object.assign(this, params)
         this.children = [
             {
+                tag: 'div',
                 class: `${
                     LibNodeView.NodeTypeFactory[this.node.category]
                 } mx-1`,
             },
-            { innerText: this.node.name },
+            { tag: 'div', innerText: this.node.name },
         ]
     }
 }

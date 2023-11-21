@@ -18,18 +18,18 @@ folder_path = Path(__file__).parent
 pkg_json = parse_json(folder_path / "package.json")
 
 load_dependencies = {
-    "@youwol/vsf-core": "^0.2.4",
-    "@youwol/vsf-canvas": "^0.2.2",
-    "rxjs": "^6.5.5",
-    "@youwol/logging": "^0.1.1",
-    "@youwol/http-clients": "^2.0.5",
-    "@youwol/http-primitives": "^0.1.2",
-    "@youwol/flux-view": "^1.1.0",
-    "@youwol/cdn-client": "^2.1.2",
-    "@youwol/fv-tabs": "^0.2.1",
-    "@youwol/os-top-banner": "^0.1.1",
-    "@youwol/fv-code-mirror-editors": "^0.3.1",
-    "@youwol/fv-tree": "^0.2.3",
+    "@youwol/vsf-core": "^0.3.0",
+    "@youwol/vsf-canvas": "^0.3.0",
+    "rxjs": "^7.5.6",
+    "@youwol/logging": "^0.2.0",
+    "@youwol/http-clients": "^3.0.0",
+    "@youwol/http-primitives": "^0.2.0",
+    "@youwol/rx-vdom": "^1.0.1",
+    "@youwol/webpm-client": "^3.0.0",
+    "@youwol/rx-tab-views": "^0.3.0",
+    "@youwol/os-top-banner": "^0.2.0",
+    "@youwol/rx-code-mirror-editors": "^0.4.1",
+    "@youwol/rx-tree-views": "^0.3.0",
     "three": "^0.152.0",
     "marked": "^4.2.3",
 }
@@ -68,7 +68,7 @@ for file in [
     "README.md",
     "package.json",
     "jest.config.ts",
-    "tsconfig.json",
+    # "tsconfig.json", need to reference rx-vdom-config.ts
     "webpack.config.ts",
 ]:
     shutil.copyfile(src=folder_path / ".template" / file, dst=folder_path / file)

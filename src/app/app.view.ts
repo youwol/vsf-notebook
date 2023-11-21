@@ -1,13 +1,17 @@
-import { VirtualDOM } from '@youwol/flux-view'
+import { VirtualDOM, ChildrenLike, FluxViewVirtualDOM } from '@youwol/rx-vdom'
 import { AppState } from './app.state'
 import { TopBannerView } from './top-banner'
-import { DockableTabs } from '@youwol/fv-tabs'
+import { DockableTabs } from '@youwol/rx-tab-views'
 import { ContentView } from './content-view/content.view'
 /**
  * @category View
  * @Category Entry Point
  */
-export class AppView implements VirtualDOM {
+export class AppView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -16,7 +20,7 @@ export class AppView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    children: VirtualDOM[]
+    children: ChildrenLike
     /**
      * @group States
      */
@@ -25,8 +29,9 @@ export class AppView implements VirtualDOM {
     constructor(params: { state: AppState }) {
         Object.assign(this, params)
         this.children = [
-            new TopBannerView(),
+            new TopBannerView() as FluxViewVirtualDOM,
             {
+                tag: 'div',
                 class: 'w-100 flex-grow-1',
                 style: {
                     minHeight: '0px',
@@ -40,7 +45,11 @@ export class AppView implements VirtualDOM {
 /**
  * @category View
  */
-export class MainContentView implements VirtualDOM {
+export class MainContentView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -50,12 +59,12 @@ export class MainContentView implements VirtualDOM {
      */
     public readonly style = {
         minHeight: '0px',
-        position: 'relative',
+        position: 'relative' as const,
     }
     /**
      * @group Immutable DOM Constants
      */
-    children: VirtualDOM[]
+    children: ChildrenLike
     /**
      * @group States
      */
@@ -84,6 +93,7 @@ export class MainContentView implements VirtualDOM {
         this.children = [
             leftSideNavView,
             {
+                tag: 'div',
                 class: 'flex-grow-1 h-100 d-flex flex-column',
                 style: {
                     position: 'relative',
@@ -91,6 +101,7 @@ export class MainContentView implements VirtualDOM {
                 },
                 children: [
                     {
+                        tag: 'div',
                         class: 'flex-grow-1',
                         style: {
                             minHeight: '0px',

@@ -1,15 +1,15 @@
-import { DockableTabs } from '@youwol/fv-tabs'
+import { DockableTabs } from '@youwol/rx-tab-views'
 import { AppState } from '../../app.state'
 
-import { asMutable, Immutable, Deployers } from '@youwol/vsf-core'
-import { BehaviorSubject, Observable, Subject } from 'rxjs'
 import {
-    attr$,
-    children$,
-    childrenFromStore$,
-    FromStoreChildrenStream$,
-    VirtualDOM,
-} from '@youwol/flux-view'
+    asMutable,
+    Immutable,
+    Deployers,
+    Immutables,
+    WorkersPoolRunTime,
+} from '@youwol/vsf-core'
+import { BehaviorSubject, Observable, Subject } from 'rxjs'
+import { RxChildren, VirtualDOM } from '@youwol/rx-vdom'
 import { HeadersView } from './common'
 import { map, switchMap } from 'rxjs/operators'
 
@@ -32,6 +32,7 @@ export class WorkersTab extends DockableTabs.Tab {
                     selected$.next(m.slice(-1)[0])
                 })
                 return {
+                    tag: 'div',
                     class: 'w-100 p-2 overflow-auto mx-auto d-flex flex-column',
                     style: {
                         height: '50vh',
@@ -54,7 +55,11 @@ export class WorkersTab extends DockableTabs.Tab {
 /**
  * @category View
  */
-export class ContentView implements VirtualDOM {
+export class ContentView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -67,7 +72,10 @@ export class ContentView implements VirtualDOM {
     /**
      * @group Observables
      */
-    public readonly children: FromStoreChildrenStream$<Deployers.WorkerEnvironmentTrait>
+    public readonly children: RxChildren<
+        'sync',
+        Deployers.WorkerEnvironmentTrait
+    >
 
     constructor({
         state,
@@ -79,78 +87,103 @@ export class ContentView implements VirtualDOM {
         const buffer$ = asMutable<
             Observable<Deployers.WorkerEnvironmentTrait[]>
         >(state.selectedWorkers$)
-        this.children = childrenFromStore$(buffer$, (worker) => {
-            return {
-                class: attr$(selected$, (selected) =>
-                    selected && selected.workerId == worker.workerId
-                        ? 'h-100 w-100'
-                        : 'h-100 w-100 d-none',
-                ),
-                children: [
-                    {
-                        innerText: attr$(
-                            worker.workersPool.busyWorkers$,
-                            (busyWorkers): string => {
-                                return busyWorkers.includes(worker.workerId)
-                                    ? 'busy'
-                                    : 'available'
+        this.children = {
+            policy: 'sync',
+            source$: buffer$,
+            vdomMap: (worker) => {
+                return {
+                    tag: 'div',
+                    class: {
+                        source$: selected$,
+                        vdomMap: (
+                            selected: Immutable<Deployers.WorkerEnvironmentTrait>,
+                        ) =>
+                            selected && selected.workerId == worker.workerId
+                                ? 'h-100 w-100'
+                                : 'h-100 w-100 d-none',
+                    },
+                    children: [
+                        {
+                            tag: 'div',
+                            innerText: {
+                                source$: worker.workersPool.busyWorkers$,
+                                vdomMap: (
+                                    busyWorkers: Immutables<string>,
+                                ): string => {
+                                    return busyWorkers.includes(worker.workerId)
+                                        ? 'busy'
+                                        : 'available'
+                                },
+                                wrapper: (status: string) =>
+                                    `Status is: ${status}`,
                             },
-                            { wrapper: (status) => `Status is: ${status}` },
-                        ),
-                    },
-                    {
-                        class: 'my-1',
-                    },
-                    {
-                        innerText: attr$(
-                            worker.workersPool.runningTasks$,
-                            (tasks) => {
-                                const task = tasks.find(
-                                    (t) => t.workerId == worker.workerId,
-                                )
-                                return task
-                                    ? `Running task: ${task.title}`
-                                    : 'No task running'
+                        },
+                        {
+                            tag: 'div',
+                            class: 'my-1',
+                        },
+                        {
+                            tag: 'div',
+                            innerText: {
+                                source$: worker.workersPool.runningTasks$,
+                                vdomMap: (
+                                    tasks: {
+                                        workerId: string
+                                        title: string
+                                    }[],
+                                ) => {
+                                    const task = tasks.find(
+                                        (t) => t.workerId == worker.workerId,
+                                    )
+                                    return task
+                                        ? `Running task: ${task.title}`
+                                        : 'No task running'
+                                },
                             },
-                        ),
-                    },
-                    {
-                        class: 'my-1',
-                    },
-                    {
-                        children: [
-                            {
-                                innerText: 'Dependencies installed:',
-                            },
-                            {
-                                class: 'px-2',
-                                children: children$(
-                                    state.project$.pipe(
-                                        map((p) =>
-                                            p.environment.workersPools.find(
-                                                (pool) =>
-                                                    pool.instance ==
-                                                    worker.workersPool,
+                        },
+                        { tag: 'div', class: 'my-1' },
+                        {
+                            tag: 'div',
+                            children: [
+                                {
+                                    tag: 'div',
+                                    innerText: 'Dependencies installed:',
+                                },
+                                {
+                                    tag: 'div',
+                                    class: 'px-2',
+                                    children: {
+                                        policy: 'replace',
+                                        source$: state.project$.pipe(
+                                            map((p) =>
+                                                p.environment.workersPools.find(
+                                                    (pool) =>
+                                                        pool.instance ==
+                                                        worker.workersPool,
+                                                ),
                                             ),
+                                            switchMap((pool) => {
+                                                return pool.runtimes$
+                                            }),
                                         ),
-                                        switchMap((pool) => {
-                                            return pool.runtimes$
-                                        }),
-                                    ),
-                                    (runtimes) => {
-                                        return Object.keys(
-                                            runtimes[worker.workerId]
-                                                .importedBundles,
-                                        ).map((key) => ({
-                                            innerText: key,
-                                        }))
+                                        vdomMap: (
+                                            runtimes: Immutables<WorkersPoolRunTime>,
+                                        ) => {
+                                            return Object.keys(
+                                                runtimes[worker.workerId]
+                                                    .importedBundles,
+                                            ).map((key) => ({
+                                                tag: 'div',
+                                                innerText: key,
+                                            }))
+                                        },
                                     },
-                                ),
-                            },
-                        ],
-                    },
-                ],
-            }
-        })
+                                },
+                            ],
+                        },
+                    ],
+                }
+            },
+        }
     }
 }

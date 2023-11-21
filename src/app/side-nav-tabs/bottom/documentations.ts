@@ -1,15 +1,10 @@
-import { DockableTabs } from '@youwol/fv-tabs'
+import { DockableTabs } from '@youwol/rx-tab-views'
 import { AppState } from '../../app.state'
 
 import { asMutable, Immutable, Modules } from '@youwol/vsf-core'
 import { BehaviorSubject, Observable, Subject } from 'rxjs'
 import { HeadersView } from './common'
-import {
-    attr$,
-    childrenFromStore$,
-    FromStoreChildrenStream$,
-    VirtualDOM,
-} from '@youwol/flux-view'
+import { RxChildren, VirtualDOM } from '@youwol/rx-vdom'
 /**
  * @category View
  */
@@ -28,6 +23,7 @@ export class DocumentationsTab extends DockableTabs.Tab {
                     selected$.next(m.slice(-1)[0])
                 })
                 return {
+                    tag: 'div',
                     class: 'w-100 p-2 overflow-auto mx-auto d-flex flex-column',
                     style: {
                         height: '50vh',
@@ -51,7 +47,11 @@ export class DocumentationsTab extends DockableTabs.Tab {
 /**
  * @category View
  */
-export class ContentView implements VirtualDOM {
+export class ContentView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -64,7 +64,7 @@ export class ContentView implements VirtualDOM {
     /**
      * @group Observables
      */
-    public readonly children: FromStoreChildrenStream$<Modules.ImplementationTrait>
+    public readonly children: RxChildren<'sync', Modules.ImplementationTrait>
 
     constructor({
         state,
@@ -76,22 +76,31 @@ export class ContentView implements VirtualDOM {
         const buffer$ = asMutable<Observable<Modules.ImplementationTrait[]>>(
             state.selectedModulesDocumentation$,
         )
-        this.children = childrenFromStore$(buffer$, (module) => {
-            return {
-                class: attr$(selected$, (selected) =>
-                    selected && selected.uid == module.uid
-                        ? 'h-100 w-100'
-                        : 'h-100 w-100 d-none',
-                ),
-                children: [
-                    {
-                        tag: 'iframe',
-                        src: module.factory.declaration.documentation,
-                        height: '100%',
-                        width: '100%',
+        this.children = {
+            policy: 'sync',
+            source$: buffer$,
+            vdomMap: (module) => {
+                return {
+                    tag: 'div',
+                    class: {
+                        source$: selected$,
+                        vdomMap: (
+                            selected: Immutable<Modules.ImplementationTrait>,
+                        ) =>
+                            selected && selected.uid == module.uid
+                                ? 'h-100 w-100'
+                                : 'h-100 w-100 d-none',
                     },
-                ],
-            }
-        })
+                    children: [
+                        {
+                            tag: 'iframe',
+                            src: module.factory.declaration.documentation,
+                            height: '100%',
+                            width: '100%',
+                        },
+                    ],
+                }
+            },
+        }
     }
 }

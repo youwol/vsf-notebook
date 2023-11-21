@@ -1,13 +1,14 @@
-import { VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { AppState } from '../app.state'
 
 import { Renderer3DView } from '@youwol/vsf-canvas'
 import { filter } from 'rxjs/operators'
 
-export class WorkflowTab implements VirtualDOM {
+export class WorkflowTab implements VirtualDOM<'div'> {
+    public readonly tag = 'div'
     public readonly class = 'h-100 w-100'
     public readonly state: AppState
-    public readonly children: VirtualDOM
+    public readonly children: ChildrenLike
     public readonly style = {}
 
     constructor(params: { state: AppState; workflowId: string }) {
