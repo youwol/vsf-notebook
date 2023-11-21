@@ -28,7 +28,7 @@ load_dependencies = {
     "@youwol/webpm-client": "^3.0.0",
     "@youwol/rx-tab-views": "^0.3.0",
     "@youwol/os-top-banner": "^0.2.0",
-    "@youwol/rx-code-mirror-editors": "^0.4.0",
+    "@youwol/rx-code-mirror-editors": "^0.4.1",
     "@youwol/rx-tree-views": "^0.3.0",
     "three": "^0.152.0",
     "marked": "^4.2.3",
