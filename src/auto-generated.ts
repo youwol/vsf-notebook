@@ -126,7 +126,7 @@ const entries = {
 export const setup = {
     name:'@youwol/vsf-notebook',
         assetId:'QHlvdXdvbC92c2Ytbm90ZWJvb2s=',
-    version:'0.3.0',
+    version:'0.3.1-wip',
     shortDescription:"Notebook like application to create Visual Studio Flow projects.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/vsf-notebook&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/vsf-notebook',
@@ -172,7 +172,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/vsf-notebook#0.3.0~dist/@youwol/vsf-notebook/${entry.name}.js`
+            `@youwol/vsf-notebook#0.3.1-wip~dist/@youwol/vsf-notebook/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
