@@ -8,7 +8,7 @@ import { ImmutableTree } from '@youwol/rx-tree-views'
 import { WorkflowTab } from './workflow.tab'
 import { filter, map, take } from 'rxjs/operators'
 import { ViewTab } from './view.view'
-import { combineLatest } from 'rxjs'
+import { combineLatest, Observable } from 'rxjs'
 import { DocumentationTab } from './documentation.view'
 
 function viewFactory(nodeId: TabIdentifier, state: AppState) {
@@ -18,20 +18,20 @@ function viewFactory(nodeId: TabIdentifier, state: AppState) {
             workflowId: nodeId.id,
         })
     }
-    const source$ = combineLatest([
-        state.project$,
-        state.projectExplorerState$,
-    ]).pipe(
-        map(([project, explorer]) => ({
-            node: explorer.getNode(nodeId.id),
-            project,
-        })),
-        filter(({ node }) => node != undefined),
-    )
+    const source$ = (
+        explorer$: Observable<ImmutableTree.State<ImmutableTree.Node>>,
+    ) =>
+        combineLatest([state.project$, explorer$]).pipe(
+            map(([project, explorer]) => ({
+                node: explorer.getNode(nodeId.id),
+                project,
+            })),
+            filter(({ node }) => node != undefined),
+        )
 
     if (nodeId.category == 'View') {
         return {
-            source$,
+            source$: source$(state.projectExplorerState$),
             vdomMap: ({ project, node }) => {
                 return new ViewTab({
                     project,
@@ -43,7 +43,7 @@ function viewFactory(nodeId: TabIdentifier, state: AppState) {
     }
     if (nodeId.category == 'Toolbox' || nodeId.category == 'Module') {
         return {
-            source$,
+            source$: source$(state.envExplorerState$.toolboxes),
             vdomMap: ({ node }) => {
                 return new DocumentationTab({
                     node,
