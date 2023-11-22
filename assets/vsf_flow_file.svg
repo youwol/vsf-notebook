@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 171.7 233.48">
+<defs>
+
+<style>.cls-1{fill:#fafafa;}.cls-2{fill:#c8c8c8;}.cls-3{fill:url(#linear-gradient);}.cls-4{fill:#a2a626;}.cls-5{fill:#c90000;}.cls-6{fill:#fcc00f;}
+#shadow {filter: drop-shadow(rgb(0, 0, 0) 3px 3px 3px);}
+</style>
+
+<linearGradient id="linear-gradient" x1="30.57" y1="92.4" x2="141.34" y2="203.95" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#b8681d"/>
+<stop offset="1" stop-color="#ece9d8"/>
+</linearGradient>
+
+</defs>
+
+<title>ITEM_VSFLOW</title>
+
+<g id="icon_item" data-name="icon item">
+<path class="cls-1" d="M65.7,258.29a9.93,9.93,0,0,1-9.92-9.92V34.73a9.93,9.93,0,0,1,9.92-9.92H168.1V71.43a12.78,12.78,0,0,0,12.76,12.76h46.62V248.37a9.93,9.93,0,0,1-9.92,9.92Z" transform="translate(-55.78 -24.81)"/>
+<path class="cls-2" d="M180.86,77.1h41.52a2.84,2.84,0,0,0,2-4.84L180,27.9a2.84,2.84,0,0,0-4.84,2V71.43A5.68,5.68,0,0,0,180.86,77.1Z" transform="translate(-55.78 -24.81)"/>
+<path d="M80.89,58.11a3.41,3.41,0,1,1,0-6.81H143a3.41,3.41,0,0,1,0,6.81Z" transform="translate(-55.78 -24.81)"/>
+<path d="M80.89,93.37a3.41,3.41,0,1,1,0-6.81H143a3.41,3.41,0,0,1,0,6.81Z" transform="translate(-55.78 -24.81)"/>
+</g>
+
+<g id="vs_flow" data-name="vs flow">
+<rect id="shadow" class="cls-3" x="22.07" y="84.29" width="127.56" height="127.56" rx="28.35" ry="28.35"/>
+<path id="shadow" class="cls-1" d="M188.84,160.1H161a4.81,4.81,0,0,0-4.8,4.8v5.73h-6.5a7.6,7.6,0,0,0-5-5V149.07a12,12,0,0,0-12-12h-5.63v-5.73a4.8,4.8,0,0,0-4.8-4.8H94.42a4.8,4.8,0,0,0-4.8,4.8v16a4.8,4.8,0,0,0,4.8,4.8h27.86a4.8,4.8,0,0,0,4.8-4.8v-5.73h5.63a7.48,7.48,0,0,1,7.48,7.48v16.58a7.6,7.6,0,0,0-5,5h-.65a12,12,0,0,0-12,12v11H110.9a4.8,4.8,0,0,0-4.8,4.8v16a4.8,4.8,0,0,0,4.8,4.8h27.86a4.81,4.81,0,0,0,4.81-4.8v-16a4.81,4.81,0,0,0-4.81-4.8H127.08v-11a7.49,7.49,0,0,1,7.48-7.48h.65a7.57,7.57,0,0,0,14.46,0h6.5v5.73a4.81,4.81,0,0,0,4.8,4.8h27.87a4.8,4.8,0,0,0,4.8-4.8v-16A4.8,4.8,0,0,0,188.84,160.1Z" transform="translate(-55.78 -24.81)"/>
+<rect class="cls-4" x="38.34" y="106.25" width="28.47" height="16.56" rx="0.3" ry="0.3"/>
+<rect class="cls-5" x="104.9" y="139.79" width="28.47" height="16.56" rx="0.3" ry="0.3"/>
+<rect class="cls-6" x="54.82" y="173.33" width="28.47" height="16.56" rx="0.3" ry="0.3"/>
+</g>
+</svg>
