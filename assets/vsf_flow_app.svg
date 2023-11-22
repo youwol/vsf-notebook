@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 283.46 283.46">
+<defs>
+
+<style>.cls-1{fill:url(#linear-gradient);}.cls-2{fill:#fafafa;}.cls-3{fill:#a2a626;}.cls-4{fill:#c90000;}.cls-5{fill:#fcc00f;}
+#shadow {filter: drop-shadow(rgb(0, 0, 0) 5px 5px 5px);}
+</style>
+
+<linearGradient id="linear-gradient" x1="0.5" y1="-0.5" x2="283.5" y2="284.5" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#b8681d"/><stop offset="1" stop-color="#ece9d8"/></linearGradient>
+
+</defs>
+
+<title>Asset 8</title>
+
+<g id="Layer_2" data-name="Layer 2">
+<g id="background_05" data-name="background 05">
+<rect class="cls-1" width="283.46" height="283.46"/>
+</g>
+<g id="NEW_Flux_02" data-name="NEW Flux 02">
+<path id="shadow" class="cls-2" d="M246.65,113.33H184.72A10.68,10.68,0,0,0,174.06,124v12.73H159.6a16.89,16.89,0,0,0-11.06-11.06V88.82A26.65,26.65,0,0,0,121.92,62.2H109.41V49.47A10.68,10.68,0,0,0,98.74,38.8H36.82A10.68,10.68,0,0,0,26.15,49.47V84.93A10.68,10.68,0,0,0,36.82,95.6H98.74a10.68,10.68,0,0,0,10.67-10.67V72.2h12.51a16.64,16.64,0,0,1,16.62,16.62v36.85a16.87,16.87,0,0,0-11.06,11.06H126a26.65,26.65,0,0,0-26.62,26.62v24.51h-26a10.69,10.69,0,0,0-10.67,10.67V234a10.69,10.69,0,0,0,10.67,10.67h61.92A10.69,10.69,0,0,0,146,234V198.53a10.69,10.69,0,0,0-10.67-10.67h-26V163.35A16.64,16.64,0,0,1,126,146.73h1.45a16.82,16.82,0,0,0,32.12,0h14.46v12.74a10.67,10.67,0,0,0,10.66,10.66h61.93a10.68,10.68,0,0,0,10.67-10.66V124A10.69,10.69,0,0,0,246.65,113.33Z"/><rect class="cls-3" x="36.15" y="48.8" width="63.26" height="36.8" rx="0.67" ry="0.67"/>
+<rect class="cls-4" x="184.06" y="123.33" width="63.26" height="36.8" rx="0.67" ry="0.67"/>
+<rect class="cls-5" x="72.78" y="197.86" width="63.26" height="36.81" rx="0.67" ry="0.67"/>
+</g>
+</g>
+</svg>
