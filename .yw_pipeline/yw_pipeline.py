@@ -1,9 +1,15 @@
+from pathlib import Path
+
 from youwol.app.environment import YouwolEnvironment
 from youwol.app.routers.projects.models_project import BrowserApp, Execution, Link, BrowserAppGraphics, \
     IPipelineFactory, \
     OpenWith
 from youwol.pipelines.pipeline_typescript_weback_npm import pipeline, PipelineConfig, PublishConfig
+from youwol.utils import parse_json
 from youwol.utils.context import Context
+
+folder_path = Path(__file__).parent.parent
+pkg_json = parse_json(folder_path / "package.json")
 
 
 class PipelineFactory(IPipelineFactory):
@@ -50,8 +56,7 @@ class PipelineFactory(IPipelineFactory):
         )
         return await pipeline(config, context)
 
-
-assets_dir = '/api/assets-gateway/raw/package/QHlvdXdvbC92c2Ytbm90ZWJvb2s=/0.1.2/assets'
+assets_dir = f"/api/assets-gateway/raw/package/QHlvdXdvbC92c2Ytbm90ZWJvb2s=/{pkg_json['version']}/assets"
 app_icon = f"url('{assets_dir}/vsf_flow_app.svg')"
 file_icon = f"url('{assets_dir}/vsf_flow_file.svg')"
 
