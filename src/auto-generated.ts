@@ -1,7 +1,7 @@
 
 const runTimeDependencies = {
     "externals": {
-        "@youwol/vsf-core": "^0.3.0",
+        "@youwol/vsf-core": "^0.3.1",
         "@youwol/vsf-canvas": "^0.3.0",
         "rxjs": "^7.5.6",
         "@youwol/logging": "^0.2.0",
@@ -11,7 +11,7 @@ const runTimeDependencies = {
         "@youwol/webpm-client": "^3.0.0",
         "@youwol/rx-tab-views": "^0.3.0",
         "@youwol/os-top-banner": "^0.2.0",
-        "@youwol/rx-code-mirror-editors": "^0.4.1",
+        "@youwol/rx-code-mirror-editors": "^0.5.0",
         "@youwol/rx-tree-views": "^0.3.0",
         "three": "^0.152.0",
         "marked": "^4.2.3"
@@ -32,7 +32,7 @@ const externals = {
     "@youwol/webpm-client": "window['@youwol/webpm-client_APIv3']",
     "@youwol/rx-tab-views": "window['@youwol/rx-tab-views_APIv03']",
     "@youwol/os-top-banner": "window['@youwol/os-top-banner_APIv02']",
-    "@youwol/rx-code-mirror-editors": "window['@youwol/rx-code-mirror-editors_APIv04']",
+    "@youwol/rx-code-mirror-editors": "window['@youwol/rx-code-mirror-editors_APIv05']",
     "@youwol/rx-tree-views": "window['@youwol/rx-tree-views_APIv03']",
     "three": "window['THREE_APIv0152']",
     "marked": "window['marked_APIv4']",
@@ -80,7 +80,7 @@ const exportedSymbols = {
         "exportedSymbol": "@youwol/os-top-banner"
     },
     "@youwol/rx-code-mirror-editors": {
-        "apiKey": "04",
+        "apiKey": "05",
         "exportedSymbol": "@youwol/rx-code-mirror-editors"
     },
     "@youwol/rx-tree-views": {

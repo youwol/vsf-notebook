@@ -1521,10 +1521,10 @@
     prettier "^3.2.5"
     prettier-plugin-properties "^0.3.0"
 
-"@youwol/rx-code-mirror-editors@^0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@youwol/rx-code-mirror-editors/-/rx-code-mirror-editors-0.4.1.tgz#7520c75f796bbee10a53c04776b07318516227ab"
-  integrity sha512-NBG5A/5EzawEki6ldPtbZzme/x8MHWf7t3sUl+kOc6RrmbRcqNPCbJhDhYhBh/6/OG+NH717FNafr6Kt4VQuBw==
+"@youwol/rx-code-mirror-editors@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@youwol/rx-code-mirror-editors/-/rx-code-mirror-editors-0.5.0.tgz#9435177a2caa4d4746131db579aef6bb46b8c6cd"
+  integrity sha512-64JpkgJy7JhSVwFCtX79FTgKSjuvntf/QDVadDdSh/mHJXFipBHEbquTxFfFKxbYiAph2Zz6my0z1oXBKCinIw==
   dependencies:
     "@typescript/vfs" "^1.4.0"
     "@youwol/logging" "^0.2.0"
@@ -1532,7 +1532,7 @@
     "@youwol/webpm-client" "^3.0.0"
     codemirror "^5.52.0"
     rxjs "^7.5.6"
-    typescript "5.2.2"
+    typescript "5.3.3"
 
 "@youwol/rx-tab-views@^0.3.0":
   version "0.3.0"
@@ -1579,7 +1579,7 @@
     stats.js "^0.17.0"
     three "^0.152.0"
 
-"@youwol/vsf-core@^0.3.0":
+"@youwol/vsf-core@^0.3.0", "@youwol/vsf-core@^0.3.1":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@youwol/vsf-core/-/vsf-core-0.3.1.tgz#f97995c82ccbbce68e418390080e2696ac1a7166"
   integrity sha512-sYJWJeJ7GYGZhTzoQvb03GVQDMCaLCco3jfhTXcFpy0GC81nnU54hWNBFRr9MxgOR+cHdh8w/PzGdtPLCU73rA==
@@ -6390,11 +6390,6 @@ typedoc@^0.25.7:
     marked "^4.3.0"
     minimatch "^9.0.3"
     shiki "^0.14.7"
-
-typescript@5.2.2:
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.2.2.tgz#5ebb5e5a5b75f085f22bc3f8460fba308310fa78"
-  integrity sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==
 
 typescript@5.3.3:
   version "5.3.3"
