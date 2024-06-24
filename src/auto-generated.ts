@@ -1,60 +1,44 @@
 
 const runTimeDependencies = {
     "externals": {
-        "@youwol/vsf-core": "^0.3.1",
-        "@youwol/vsf-canvas": "^0.3.0",
-        "rxjs": "^7.5.6",
-        "@youwol/logging": "^0.2.0",
         "@youwol/http-clients": "^3.0.0",
         "@youwol/http-primitives": "^0.2.0",
-        "@youwol/rx-vdom": "^1.0.1",
-        "@youwol/webpm-client": "^3.0.0",
-        "@youwol/rx-tab-views": "^0.3.0",
+        "@youwol/logging": "^0.2.0",
         "@youwol/os-top-banner": "^0.2.0",
         "@youwol/rx-code-mirror-editors": "^0.5.0",
+        "@youwol/rx-tab-views": "^0.3.0",
         "@youwol/rx-tree-views": "^0.3.0",
-        "three": "^0.152.0",
-        "marked": "^4.2.3"
+        "@youwol/rx-vdom": "^1.0.1",
+        "@youwol/vsf-canvas": "^0.3.0",
+        "@youwol/vsf-core": "^0.3.1",
+        "@youwol/webpm-client": "^3.0.0",
+        "marked": "^4.2.3",
+        "rxjs": "^7.5.6",
+        "three": "^0.152.0"
     },
     "includedInBundle": {
-        "d3-dag": "0.8.2",
-        "client-zip": "2.3.0"
+        "client-zip": "2.3.0",
+        "d3-dag": "0.8.2"
     }
 }
 const externals = {
-    "@youwol/vsf-core": "window['@youwol/vsf-core_APIv03']",
-    "@youwol/vsf-canvas": "window['@youwol/vsf-canvas_APIv03']",
-    "rxjs": "window['rxjs_APIv7']",
-    "@youwol/logging": "window['@youwol/logging_APIv02']",
     "@youwol/http-clients": "window['@youwol/http-clients_APIv3']",
     "@youwol/http-primitives": "window['@youwol/http-primitives_APIv02']",
-    "@youwol/rx-vdom": "window['@youwol/rx-vdom_APIv1']",
-    "@youwol/webpm-client": "window['@youwol/webpm-client_APIv3']",
-    "@youwol/rx-tab-views": "window['@youwol/rx-tab-views_APIv03']",
+    "@youwol/logging": "window['@youwol/logging_APIv02']",
     "@youwol/os-top-banner": "window['@youwol/os-top-banner_APIv02']",
     "@youwol/rx-code-mirror-editors": "window['@youwol/rx-code-mirror-editors_APIv05']",
+    "@youwol/rx-tab-views": "window['@youwol/rx-tab-views_APIv03']",
     "@youwol/rx-tree-views": "window['@youwol/rx-tree-views_APIv03']",
-    "three": "window['THREE_APIv0152']",
+    "@youwol/rx-vdom": "window['@youwol/rx-vdom_APIv1']",
+    "@youwol/vsf-canvas": "window['@youwol/vsf-canvas_APIv03']",
+    "@youwol/vsf-core": "window['@youwol/vsf-core_APIv03']",
+    "@youwol/webpm-client": "window['@youwol/webpm-client_APIv3']",
     "marked": "window['marked_APIv4']",
-    "rxjs/operators": "window['rxjs_APIv7']['operators']"
+    "rxjs": "window['rxjs_APIv7']",
+    "rxjs/operators": "window['rxjs_APIv7']['operators']",
+    "three": "window['THREE_APIv0152']"
 }
 const exportedSymbols = {
-    "@youwol/vsf-core": {
-        "apiKey": "03",
-        "exportedSymbol": "@youwol/vsf-core"
-    },
-    "@youwol/vsf-canvas": {
-        "apiKey": "03",
-        "exportedSymbol": "@youwol/vsf-canvas"
-    },
-    "rxjs": {
-        "apiKey": "7",
-        "exportedSymbol": "rxjs"
-    },
-    "@youwol/logging": {
-        "apiKey": "02",
-        "exportedSymbol": "@youwol/logging"
-    },
     "@youwol/http-clients": {
         "apiKey": "3",
         "exportedSymbol": "@youwol/http-clients"
@@ -63,17 +47,9 @@ const exportedSymbols = {
         "apiKey": "02",
         "exportedSymbol": "@youwol/http-primitives"
     },
-    "@youwol/rx-vdom": {
-        "apiKey": "1",
-        "exportedSymbol": "@youwol/rx-vdom"
-    },
-    "@youwol/webpm-client": {
-        "apiKey": "3",
-        "exportedSymbol": "@youwol/webpm-client"
-    },
-    "@youwol/rx-tab-views": {
-        "apiKey": "03",
-        "exportedSymbol": "@youwol/rx-tab-views"
+    "@youwol/logging": {
+        "apiKey": "02",
+        "exportedSymbol": "@youwol/logging"
     },
     "@youwol/os-top-banner": {
         "apiKey": "02",
@@ -83,17 +59,41 @@ const exportedSymbols = {
         "apiKey": "05",
         "exportedSymbol": "@youwol/rx-code-mirror-editors"
     },
+    "@youwol/rx-tab-views": {
+        "apiKey": "03",
+        "exportedSymbol": "@youwol/rx-tab-views"
+    },
     "@youwol/rx-tree-views": {
         "apiKey": "03",
         "exportedSymbol": "@youwol/rx-tree-views"
     },
-    "three": {
-        "apiKey": "0152",
-        "exportedSymbol": "THREE"
+    "@youwol/rx-vdom": {
+        "apiKey": "1",
+        "exportedSymbol": "@youwol/rx-vdom"
+    },
+    "@youwol/vsf-canvas": {
+        "apiKey": "03",
+        "exportedSymbol": "@youwol/vsf-canvas"
+    },
+    "@youwol/vsf-core": {
+        "apiKey": "03",
+        "exportedSymbol": "@youwol/vsf-core"
+    },
+    "@youwol/webpm-client": {
+        "apiKey": "3",
+        "exportedSymbol": "@youwol/webpm-client"
     },
     "marked": {
         "apiKey": "4",
         "exportedSymbol": "marked"
+    },
+    "rxjs": {
+        "apiKey": "7",
+        "exportedSymbol": "rxjs"
+    },
+    "three": {
+        "apiKey": "0152",
+        "exportedSymbol": "THREE"
     }
 }
 
